@@ -1,0 +1,152 @@
+/* =====================================================================
+ * 增强样式（默认视觉与基础样式一致）
+ *  1) 中文字体：系统字体栈（零外链，墙内可用）
+ *  2) 键盘无障碍焦点环
+ *  3) 暗色模式（跟随系统 prefers-color-scheme）
+ * ===================================================================== */
+
+/* ---------- 1) 中文字体：系统优先，零外部请求 ---------- */
+body {
+  font-family:
+    "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "HarmonyOS Sans SC", "MiSans",
+    "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC",
+    "Microsoft YaHei UI", "Microsoft YaHei", "DengXian",
+    "Helvetica Neue", sans-serif;
+}
+
+/* ---------- 2) 键盘焦点 ---------- */
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.slot-cell[role="button"],
+.dir-card[role="button"] {
+  cursor: pointer;
+}
+.slot-cell[role="button"]:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+  box-shadow: var(--shadow-float);
+  z-index: 3;
+}
+
+/* ---------- 3) 暗色模式 ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    /* Apple 设计令牌 → 深色值（覆盖后，所有引用令牌的规则自动跟随） */
+    --apple-bg-white: #1C1C1E;
+    --apple-bg-dark: #000000;
+    --apple-bg-light-gray: #000000;
+    --apple-bg-elevated: #232326;
+    --apple-text-primary: #F5F5F7;
+    --apple-text-secondary: #A1A1A6;
+    --apple-text-tertiary: #8E8E93;
+    --apple-text-on-dark: #F5F5F7;
+    --apple-text-white: #FFFFFF;
+    --apple-link-blue: #4DA3FF;
+    --apple-link-blue-hover: #6DB8FF;
+    --apple-shadow-card: 0 2px 8px rgba(0, 0, 0, .5), 0 8px 24px rgba(0, 0, 0, .6);
+    --apple-shadow-hover: 0 4px 12px rgba(0, 0, 0, .6), 0 12px 32px rgba(0, 0, 0, .7);
+    --apple-shadow-sm: 0 1px 4px rgba(0, 0, 0, .45), 0 4px 12px rgba(0, 0, 0, .55);
+    --apple-shadow-modal: 0 8px 20px rgba(0, 0, 0, .6), 0 20px 60px rgba(0, 0, 0, .8);
+
+    /* 应用别名 */
+    --bg: #000000;
+    --card: #1C1C1E;
+    --hair: rgba(255, 255, 255, .12);
+    --hair-strong: #3A3A3C;
+    --text: #F5F5F7;
+    --muted: #8E8E93;
+    --blue: #4DA3FF;
+    --blue-press: #6DB8FF;
+    --blue-soft: rgba(77, 163, 255, .16);
+    --seg-bg: #2C2C2E;
+    --field: rgba(118, 118, 128, .24);
+    --shadow-card: var(--apple-shadow-card);
+    --shadow-float: var(--apple-shadow-hover);
+    --sb-thumb: rgba(255, 255, 255, .24);
+    --sb-thumb-hover: rgba(255, 255, 255, .4);
+    --sb-thumb-active: rgba(255, 255, 255, .56);
+  }
+
+  body { background: var(--bg); color: var(--text); }
+
+  /* 半透明表面 */
+  .app-header { background: rgba(28, 28, 30, .82); }
+  .suggest { background: rgba(28, 28, 30, .94); }
+  .pick-sheet { background: rgba(28, 28, 30, .97); }
+  .modal { background: rgba(28, 28, 30, .97); }
+  .modal-mask, .pick-mask { background: rgba(0, 0, 0, .6); }
+
+  /* 搜索框 / 图标 / 圆形关闭按钮 */
+  .search-box::placeholder { color: #8E8E93; }
+  .search-icon, .pk-search-ico, .pick-chev { color: #8E8E93; }
+  .search-clear, .modal-close, .pick-close {
+    background: rgba(120, 120, 128, .32);
+    color: #C7C7CC;
+  }
+  .search-clear:hover, .modal-close:hover, .pick-close:hover {
+    background: rgba(120, 120, 128, .46);
+  }
+
+  /* 分段控件 / 选择器按钮 */
+  .seg button { color: #A1A1A6; }
+  .seg button.on { background: #3A3A3C; color: var(--text); }
+  .pick-btn:hover { border-color: #48484A; background: var(--apple-bg-elevated); }
+  .week-nav button:not(.wk-today) { background: var(--card); }
+
+  /* 表格与卡片分隔线 */
+  .timetable th, .timetable td {
+    border-bottom-color: rgba(255, 255, 255, .08);
+    border-right-color: rgba(255, 255, 255, .06);
+  }
+  .timetable thead th:first-child { border-bottom-color: rgba(255, 255, 255, .08); }
+  .kv { border-bottom-color: rgba(255, 255, 255, .08); }
+  .empty-slot { color: rgba(255, 255, 255, .16); }
+
+  /* 周次圆点 */
+  .wk-dot { color: #98989D; }
+  .wk-dot.cur { color: #FFFFFF; }
+
+  /* 名单横幅（仅内部版出现） */
+  .banner { border-color: rgba(77, 163, 255, .28); color: #BBDCFF; }
+  .banner-x { background: rgba(77, 163, 255, .2); color: var(--blue); }
+  .banner-x:hover { background: rgba(77, 163, 255, .3); }
+
+  /* 弹窗动作 chip */
+  .chip-btn { background: rgba(77, 163, 255, .16); color: var(--blue); }
+  .chip-btn:hover { background: rgba(77, 163, 255, .26); }
+
+  /* 移动端选择器 */
+  .pick-grab { background: rgba(255, 255, 255, .3); }
+  .pk-row:hover { background: rgba(77, 163, 255, .14); }
+  .pk-row.cur { background: rgba(77, 163, 255, .2); }
+
+  /* 搜索建议 */
+  .suggest-item:hover, .suggest-item.active { background: rgba(77, 163, 255, .16); }
+  .s-tag.course { background: rgba(52, 199, 89, .22); color: #7CE0A1; }
+  .s-tag.class { background: rgba(77, 163, 255, .2); color: #9CCBFF; }
+  .s-tag.person { background: rgba(255, 159, 10, .2); color: #FFC46B; }
+  .s-tag.teacher { background: rgba(191, 90, 242, .22); color: #DDA6F5; }
+  .s-tag.room { background: rgba(90, 200, 250, .2); color: #9BE3FF; }
+
+  /* 课程色板（深色） */
+  .slot-cell.c0 { background: rgba(41, 151, 255, .18); color: #C7E0FF; }
+  .slot-cell.c1 { background: rgba(48, 209, 88, .16); color: #A8E8B9; }
+  .slot-cell.c2 { background: rgba(255, 159, 10, .18); color: #F3C77E; }
+  .slot-cell.c3 { background: rgba(191, 90, 242, .18); color: #DCA8F5; }
+  .slot-cell.c4 { background: rgba(90, 200, 250, .18); color: #9BE3F5; }
+  .slot-cell.c5 { background: rgba(255, 69, 58, .18); color: #F5A6A0; }
+  .slot-cell.c6 { background: rgba(142, 142, 147, .22); color: #C7C7CC; }
+  .slot-cell.c0 .c-name { color: #DDEBFF; }
+  .slot-cell.c1 .c-name { color: #D2F5DA; }
+  .slot-cell.c2 .c-name { color: #FFE1B0; }
+  .slot-cell.c3 .c-name { color: #EFD3FF; }
+  .slot-cell.c4 .c-name { color: #D0F3FF; }
+  .slot-cell.c5 .c-name { color: #FFD2CF; }
+  .slot-cell.c6 .c-name { color: #E5E5EA; }
+}

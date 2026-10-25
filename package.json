@@ -1,0 +1,32 @@
+{
+  "name": "timetable",
+  "version": "1.0.0",
+  "private": true,
+  "description": "2026-2027 学年秋季学期课表查询 · 零依赖单文件静态站点",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/LouveteauSean/TimeTable.git"
+  },
+  "keywords": [
+    "timetable",
+    "class-schedule",
+    "static-site",
+    "vanilla-js",
+    "pwa-offline"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "build:full": "node scripts/build.mjs --data private/data.raw.json --out dist-full",
+    "data": "node scripts/prepare-data.mjs",
+    "serve": "node scripts/serve.mjs",
+    "test": "node tests/smoke.mjs",
+    "check:pii": "node scripts/check-pii.mjs",
+    "screenshots": "node scripts/screenshots.mjs"
+  },
+  "author": "simplenty (https://github.com/simplenty)"
+}

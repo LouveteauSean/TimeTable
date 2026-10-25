@@ -1,0 +1,106 @@
+/* =====================================================================
+ * rebuild extras (included in BOTH builds)
+ * 仅在「打印」与「减少动态效果」偏好下生效 —— 不影响默认屏幕渲染，
+ * 因此严格复刻版与原件在屏幕像素上保持一致。
+ * ===================================================================== */
+
+/* ---------- 打印：把交互壳去掉，输出纯课表 ---------- */
+@media print {
+  :root {
+    --apple-section-gap: 0px;
+  }
+  html, body {
+    background: #fff !important;
+    font-size: 12px;
+  }
+  .app-header,
+  .toolbar,
+  #weekBar,
+  #studentBanner,
+  #modalMask,
+  #pickMask,
+  .footer {
+    display: none !important;
+  }
+  .layout {
+    padding: 0;
+  }
+  #view-tt.view,
+  #view-dir.view {
+    display: block !important;
+  }
+  #view-dir {
+    display: none !important;
+  }
+  #gridCard.grid-card {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: 0;
+    background: #fff;
+  }
+  .grid-title {
+    margin-bottom: 8px;
+  }
+  .grid-title h2 {
+    font-size: 16px;
+  }
+  .grid-title .sub {
+    font-size: 11px;
+  }
+  .grid-scroll {
+    overflow: visible;
+    max-height: none;
+  }
+  table.timetable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.timetable th,
+  table.timetable td {
+    border: 1px solid #d2d2d7 !important;
+    padding: 4px 5px;
+  }
+  .slot {
+    padding: 3px !important;
+  }
+  .slot-stack {
+    gap: 2px !important;
+  }
+  .slot-cell,
+  .slot-cell * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .slot-cell {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding: 3px 4px !important;
+    border-radius: 3px !important;
+  }
+  .slot-cell.c0,
+  .slot-cell.c1,
+  .slot-cell.c2,
+  .slot-cell.c3,
+  .slot-cell.c4,
+  .slot-cell.c5,
+  .slot-cell.c6 {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  a[href]::after {
+    content: "";
+  }
+}
+
+/* ---------- 减少动态效果：把剩余动画也停掉（原版只停了换周动画） ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}

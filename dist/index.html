@@ -1,0 +1,2164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="color-scheme" content="light dark">
+  <meta name="description" content="2026-2027 学年秋季学期课表查询：班级 / 教师 / 教室课表、学期总览、课程检索。">
+  <meta name="referrer" content="no-referrer">
+  <title>课表 · 2026-2027学年秋</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml">
+  <style>
+
+/* Apple Design Skill design tokens + timetable styles. */
+:root {
+  /* ---- Apple Design Skill tokens ---- */
+  --apple-bg-white: #FFFFFF;
+  --apple-bg-dark: #1D1D1F;
+  --apple-bg-light-gray: #F5F5F7;
+  --apple-bg-elevated: #FBFBFD;
+
+  --apple-text-primary: #1D1D1F;
+  --apple-text-secondary: #6E6E73;
+  --apple-text-tertiary: #86868B;
+  --apple-text-on-dark: #F5F5F7;
+  --apple-text-white: #FFFFFF;
+
+  --apple-link-blue: #0066CC;
+  --apple-link-blue-hover: #0077ED;
+
+  --apple-section-gap: 100px;
+  --apple-section-gap-sm: 80px;
+  --apple-section-gap-lg: 120px;
+  --apple-component-gap-sm: 16px;
+  --apple-component-gap-md: 32px;
+  --apple-component-gap-lg: 48px;
+  --apple-card-padding: 32px;
+  --apple-card-padding-sm: 24px;
+  --apple-card-padding-lg: 40px;
+  --apple-content-max-width: 980px;
+  --apple-content-max-width-lg: 1200px;
+
+  --apple-weight-title: 600;
+  --apple-weight-title-bold: 700;
+  --apple-weight-body: 400;
+  --apple-weight-body-medium: 500;
+
+  --apple-radius-card: 18px;
+  --apple-radius-card-sm: 12px;
+  --apple-radius-card-lg: 20px;
+  --apple-radius-button: 980px;
+  --apple-radius-badge: 8px;
+
+  --apple-shadow-card: 0 2px 8px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.08);
+  --apple-shadow-hover: 0 4px 12px rgba(0,0,0,0.06), 0 12px 32px rgba(0,0,0,0.12);
+  --apple-shadow-sm: 0 1px 4px rgba(0,0,0,0.04), 0 4px 12px rgba(0,0,0,0.06);
+  --apple-shadow-modal: 0 8px 20px rgba(0,0,0,0.08), 0 20px 60px rgba(0,0,0,0.16);
+
+  --apple-tracking-zh-title: 0.04em;
+  --apple-tracking-body: 0em;
+  --apple-leading-title: 1.1;
+  --apple-leading-body: 1.53;
+
+  /* ---- app aliases mapped to tokens ---- */
+  --bg: var(--apple-bg-light-gray);
+  --card: var(--apple-bg-white);
+  --hair: rgba(0, 0, 0, 0.08);
+  --hair-strong: #d2d2d7;
+  --text: var(--apple-text-primary);
+  --muted: var(--apple-text-tertiary);
+  --blue: var(--apple-link-blue);
+  --blue-press: var(--apple-link-blue-hover);
+  --blue-soft: #e8f1fd;
+  --seg-bg: #e9e9eb;
+  --field: rgba(120, 120, 128, 0.12);
+  --shadow-card: var(--apple-shadow-card);
+  --shadow-float: var(--apple-shadow-hover);
+  --radius-card: var(--apple-radius-card);
+
+  /* ---- custom scrollbars ---- */
+  --sb-size: 11px;
+  --sb-thumb: rgba(0, 0, 0, 0.16);
+  --sb-thumb-hover: rgba(0, 0, 0, 0.34);
+  --sb-thumb-active: rgba(0, 0, 0, 0.48);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { -webkit-text-size-adjust: 100%; }
+
+/* ================= custom scrollbars (macOS-style) ================= */
+::-webkit-scrollbar { width: var(--sb-size); height: var(--sb-size); }
+::-webkit-scrollbar-track, ::-webkit-scrollbar-corner { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background-color: var(--sb-thumb);
+  background-clip: content-box;
+  border: 3px solid transparent;
+  border-radius: 999px;
+}
+html.is-scrolling ::-webkit-scrollbar-thumb { background-color: var(--sb-thumb-hover); }
+::-webkit-scrollbar-thumb:hover, ::-webkit-scrollbar-thumb:active { background-color: var(--sb-thumb-active); }
+
+/* Firefox has no ::-webkit-scrollbar, so it gets the standard properties only.
+   Scoping matters: scrollbar-color inherits and outranks the pseudo-elements,
+   so setting it globally would hand Chrome back its native scrollbar. */
+@supports not selector(::-webkit-scrollbar) {
+  html { scrollbar-width: thin; scrollbar-color: var(--sb-thumb) transparent; }
+  html.is-scrolling { scrollbar-color: var(--sb-thumb-hover) transparent; }
+}
+
+/* ================= inline SVG icons ================= */
+.ico { display: inline-block; width: 1em; height: 1em; vertical-align: -0.14em; flex: none; }
+body {
+  font-family: "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  letter-spacing: var(--apple-tracking-body);
+}
+button { font-family: inherit; cursor: pointer; letter-spacing: inherit; }
+input, select { font-family: inherit; letter-spacing: inherit; }
+
+/* ================= header ================= */
+.app-header {
+  position: sticky; top: 0; z-index: 50;
+  background: rgba(251, 251, 253, 0.78); /* --apple-bg-elevated w/ alpha */
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border-bottom: 1px solid var(--hair);
+}
+.header-inner {
+  max-width: var(--apple-content-max-width-lg); margin: 0 auto; padding: 10px 22px;
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+}
+.search-wrap { position: relative; flex: 1; min-width: 250px; max-width: 520px; margin: 0 auto; }
+.search-box {
+  width: 100%; height: 38px; border-radius: 980px;
+  border: 1px solid transparent; background: var(--field);
+  padding: 0 84px 0 34px; font-size: 13.5px; color: var(--text);
+  transition: background .18s, border-color .18s, box-shadow .18s;
+}
+.search-box::placeholder { color: #8e8e93; }
+.search-box:focus {
+  outline: none; background: var(--apple-bg-white); border-color: var(--apple-link-blue);
+  box-shadow: 0 0 0 3.5px rgba(0, 102, 204, 0.18);
+}
+.search-icon {
+  position: absolute; left: 13px; top: 50%; transform: translateY(-50%);
+  color: #8e8e93; pointer-events: none; display: flex; align-items: center;
+}
+.search-icon .ico { width: 15px; height: 15px; }
+.search-clear {
+  position: absolute; right: 74px; top: 50%; transform: translateY(-50%);
+  width: 19px; height: 19px; border-radius: 50%; border: none;
+  background: rgba(120, 120, 128, 0.22); color: #6d6d72;
+  display: none; align-items: center; justify-content: center;
+}
+.search-clear .ico { width: 11px; height: 11px; }
+.search-clear:hover { background: rgba(120, 120, 128, 0.34); }
+.go-btn {
+  position: absolute; right: 3px; top: 3px; bottom: 3px;
+  border: none; border-radius: var(--apple-radius-button); padding: 0 15px;
+  background: var(--apple-link-blue); color: var(--apple-text-white);
+  font-size: var(--apple-font-size-btn, 12.5px); font-weight: var(--apple-weight-body-medium);
+  transition: background .15s;
+}
+.go-btn:hover { background: var(--apple-link-blue-hover); }
+.go-btn:active { transform: scale(0.97); }
+.suggest {
+  position: absolute; top: 44px; left: 0; right: 0;
+  background: rgba(255, 255, 255, 0.92);
+  -webkit-backdrop-filter: saturate(180%) blur(24px);
+  backdrop-filter: saturate(180%) blur(24px);
+  border: 1px solid var(--hair); border-radius: 16px;
+  box-shadow: var(--shadow-float);
+  max-height: 430px; overflow-y: auto; display: none; z-index: 100;
+  padding: 5px;
+}
+.suggest-item {
+  display: flex; align-items: center; gap: 9px; width: 100%;
+  padding: 9px 11px; border: none; background: none; text-align: left;
+  font-size: 13.5px; color: var(--text); border-radius: 11px;
+}
+.suggest-item:hover, .suggest-item.active { background: rgba(0, 102, 204, 0.09); }
+.suggest-item .s-name { font-weight: 600; }
+.suggest-item .s-sub { color: var(--muted); font-size: 12px; margin-left: auto; max-width: 46%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.s-tag {
+  flex: none; font-size: 10.5px; font-weight: 700; border-radius: 6px;
+  padding: 2.5px 7px; letter-spacing: 0.02em;
+}
+.s-tag.course { background: rgba(52, 199, 89, 0.14); color: #1e7a3c; }
+.s-tag.class  { background: rgba(0, 113, 227, 0.12); color: #0060c9; }
+.s-tag.person { background: rgba(255, 149, 0, 0.15); color: #b25e02; }
+.s-tag.teacher { background: rgba(175, 82, 222, 0.13); color: #7d2f9e; }
+.s-tag.room { background: rgba(90, 200, 250, 0.18); color: #0f6e91; }
+.suggest-empty { padding: 18px; color: var(--muted); text-align: center; font-size: 13px; }
+
+/* ================= layout ================= */
+.layout { max-width: var(--apple-content-max-width); margin: 0 auto; padding: var(--apple-component-gap-md) 24px var(--apple-section-gap-sm); }
+@media (min-width: 1440px) { .layout { max-width: var(--apple-content-max-width-lg); } }
+@media (max-width: 733px) { .layout { padding-left: 20px; padding-right: 20px; } }
+.view { display: none; }
+.view.active { display: block; animation: fadeIn .25s ease; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+
+/* ================= toolbar ================= */
+.toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+.seg {
+  display: inline-flex; background: var(--seg-bg);
+  border-radius: 10px; padding: 2px;
+}
+.seg button {
+  border: none; background: none; padding: 6px 15px; border-radius: 8px;
+  font-size: 13px; font-weight: 600; color: #6d6d72;
+  transition: color .15s;
+}
+.seg button.on {
+  background: var(--apple-bg-white); color: var(--text);
+  box-shadow: var(--apple-shadow-sm);
+}
+.seg.mode-seg { margin-left: auto; }
+.pick-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  height: 36px; padding: 0 14px 0 17px;
+  border: 1px solid var(--hair-strong); border-radius: 10px;
+  background: var(--apple-bg-white); color: var(--text);
+  font-size: 13.5px; font-weight: 600; letter-spacing: -0.01em;
+  min-width: 150px; max-width: 330px;
+  transition: border-color .15s, background .15s, box-shadow .15s;
+}
+.pick-btn:hover { border-color: #b9b9c0; background: var(--apple-bg-elevated); }
+.pick-btn:active { transform: scale(0.985); }
+.pick-btn:focus-visible { outline: none; border-color: var(--apple-link-blue); box-shadow: 0 0 0 3.5px rgba(0, 102, 204, 0.18); }
+.pick-btn .pick-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pick-btn.placeholder .pick-label { color: var(--muted); font-weight: 500; }
+.pick-chev { color: #86868b; flex: none; transition: transform .2s ease; }
+.pick-btn[aria-expanded="true"] .pick-chev { transform: rotate(180deg); }
+
+/* ================= entity picker sheet ================= */
+.pick-mask { position: fixed; inset: 0; z-index: 150; display: none; }
+.pick-mask.show { display: block; }
+.pick-sheet {
+  position: absolute; top: 0; left: 0;
+  width: 340px; max-width: calc(100vw - 20px);
+  background: rgba(255, 255, 255, 0.97);
+  -webkit-backdrop-filter: saturate(180%) blur(20px);
+  backdrop-filter: saturate(180%) blur(20px);
+  border: 1px solid var(--hair); border-radius: 16px;
+  box-shadow: var(--apple-shadow-modal);
+  display: flex; flex-direction: column;
+  max-height: 440px; overflow: hidden;
+  animation: pop .18s cubic-bezier(0.2, 0.9, 0.3, 1.15);
+}
+.pick-grab { display: none; }
+.pick-head { display: none; }
+.pk-search-wrap { position: relative; padding: 10px 12px 6px; }
+.pk-search-ico { position: absolute; left: 23px; top: 50%; transform: translateY(-50%); color: #8e8e93; pointer-events: none; display: flex; align-items: center; }
+.pk-search-ico .ico { width: 13px; height: 13px; }
+.pk-search {
+  width: 100%; height: 34px; border-radius: 10px; border: none; background: var(--field);
+  padding: 0 12px 0 32px; font-size: 13.5px; color: var(--text);
+}
+.pk-search:focus { outline: none; background: var(--apple-bg-white); box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15); }
+.pick-list { overflow-y: auto; padding: 4px 8px 10px; }
+.pk-row {
+  display: flex; align-items: center; gap: 10px; width: 100%;
+  min-height: 42px; padding: 7px 10px; border: none; background: none; border-radius: 10px;
+  font-size: 13.5px; color: var(--text); text-align: left;
+}
+.pk-row:hover { background: rgba(0, 102, 204, 0.07); }
+.pk-row .pk-name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pk-row .pk-sub { margin-left: auto; color: var(--muted); font-size: 11.5px; flex: none; }
+.pk-row .pk-check { flex: none; width: 18px; display: flex; align-items: center; justify-content: center; color: var(--apple-link-blue); opacity: 0; transition: opacity .15s ease; }
+.pk-row.cur .pk-check { opacity: 1; }
+.pk-row .pk-check .ico { width: 15px; height: 15px; }
+.pk-empty { padding: 22px; text-align: center; color: var(--muted); font-size: 13px; }
+.week-bar { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+.week-nav { display: flex; align-items: center; gap: 7px; flex: none; touch-action: pan-y; }
+.week-nav button:not(.wk-today) {
+  width: 30px; height: 30px; border-radius: 50%; border: 1px solid var(--hair-strong);
+  background: #fff; color: var(--text); line-height: 1;
+  display: flex; align-items: center; justify-content: center;
+  transition: all .15s;
+}
+.week-nav button:not(.wk-today) .ico { width: 15px; height: 15px; }
+.week-nav button:not(.wk-today):hover:not(:disabled) { border-color: var(--apple-link-blue); color: var(--apple-link-blue); }
+.week-nav button:not(.wk-today):disabled { opacity: 0.3; cursor: default; }
+.week-label { font-weight: 700; font-size: 14px; min-width: 62px; text-align: center; font-variant-numeric: tabular-nums; }
+.wk-today {
+  flex: none; width: auto; min-width: 56px; height: 30px; padding: 0 14px;
+  border: none; border-radius: 980px;
+  background: var(--apple-link-blue); color: var(--apple-text-white);
+  font-size: 12.5px; font-weight: 600; line-height: 1; white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0, 102, 204, 0.3);
+  transition: background .15s, color .15s, box-shadow .15s, transform .15s;
+}
+.wk-today:hover { background: var(--apple-link-blue-hover); }
+.wk-today.off { background: var(--field); color: var(--muted); box-shadow: none; }
+.wk-today.off:hover { background: var(--hair); color: var(--text); }
+.wk-today:active { transform: scale(0.96); }
+.wk-today:focus-visible { outline: none; box-shadow: 0 0 0 3.5px rgba(0, 102, 204, 0.25); }
+.week-marks { display: flex; gap: 4px; flex: 1; overflow-x: auto; -webkit-overflow-scrolling: touch; overscroll-behavior-x: contain; scrollbar-width: none; padding: 2px; }
+.week-marks::-webkit-scrollbar { display: none; }
+.wk-dot {
+  flex: none;
+  min-width: 27px; height: 27px; border-radius: 8px; border: none;
+  background: transparent; font-size: 11.5px; font-weight: 600; color: #aeaeb2; padding: 0 4px;
+  font-variant-numeric: tabular-nums;
+  transition: all .15s;
+}
+.wk-dot:hover { background: var(--field); }
+.wk-dot.has { color: var(--text); }
+.wk-dot.cur { background: var(--apple-link-blue); color: var(--apple-text-white); font-weight: var(--apple-weight-title-bold); box-shadow: 0 2px 8px rgba(0, 102, 204, 0.35); }
+
+/* ================= student banner ================= */
+.banner {
+  display: none; align-items: center; gap: 10px;
+  background: var(--blue-soft);
+  border: 1px solid rgba(0, 102, 204, 0.18);
+  color: #0a4d94;
+  border-radius: 14px; padding: 10px 16px; margin-bottom: 14px;
+  font-size: 13.5px;
+  animation: fadeIn .2s ease;
+}
+.banner b { font-weight: 700; }
+.banner-x {
+  margin-left: auto; border: none; width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(0, 102, 204, 0.14); color: var(--apple-link-blue);
+  display: flex; align-items: center; justify-content: center;
+}
+.banner-x .ico { width: 11px; height: 11px; }
+.banner-ico { display: flex; color: var(--apple-link-blue); flex: none; }
+.banner-ico .ico { width: 15px; height: 15px; }
+.banner-x:hover { background: rgba(0, 102, 204, 0.26); }
+
+/* ================= timetable ================= */
+.grid-card {
+  background: var(--card); border: 1px solid var(--hair);
+  border-radius: var(--radius-card); box-shadow: var(--shadow-card); overflow: hidden;
+  touch-action: pan-y;
+  transition: transform .22s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+.grid-card.dragging { transition: none; }
+.grid-card.wk-in-right { animation: wkInRight .26s cubic-bezier(0.2, 0.9, 0.3, 1); }
+.grid-card.wk-in-left { animation: wkInLeft .26s cubic-bezier(0.2, 0.9, 0.3, 1); }
+@keyframes wkInRight { from { opacity: .45; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
+@keyframes wkInLeft { from { opacity: .45; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
+@media (prefers-reduced-motion: reduce) {
+  .grid-card.wk-in-right, .grid-card.wk-in-left { animation: none; }
+}
+.grid-title {
+  display: flex; align-items: baseline; gap: 10px; padding: 16px 20px 14px;
+  flex-wrap: wrap;
+}
+.grid-title h2 { font-size: 24px; font-weight: var(--apple-weight-title-bold); line-height: var(--apple-leading-title); letter-spacing: var(--apple-tracking-zh-title); }
+.grid-title .sub { color: var(--muted); font-size: 12.5px; font-weight: 500; }
+.grid-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table.timetable { border-collapse: separate; border-spacing: 0; width: 100%; table-layout: fixed; }
+.timetable th, .timetable td { border-bottom: 1px solid rgba(0, 0, 0, 0.05); border-right: 1px solid rgba(0, 0, 0, 0.045); }
+.timetable tr th:last-child, .timetable tr td:last-child { border-right: none; }
+.timetable tbody tr:last-child td { border-bottom: none; }
+.timetable thead th {
+  padding: 11px 6px; font-size: 12.5px; color: var(--muted); font-weight: 600;
+  background: var(--apple-bg-elevated); letter-spacing: 0.01em;
+}
+.timetable thead th:first-child { border-bottom: 1px solid rgba(0,0,0,0.05); }
+.timetable thead th.today { color: var(--blue); background: var(--blue-soft); }
+.col-time { width: 88px; }
+td.slot { height: 84px; vertical-align: top; padding: 4px; }
+.slot-stack { display: flex; flex-direction: column; gap: 4px; }
+.slot-cell {
+  min-height: 74px;
+  border-radius: 11px; padding: 8px 10px; overflow: hidden; cursor: pointer;
+  position: relative; transition: transform .13s, box-shadow .13s, filter .13s;
+}
+.slot-cell:hover { transform: scale(1.015); box-shadow: var(--apple-shadow-hover); z-index: 2; }
+.slot-cell:active { transform: scale(0.99); }
+.slot-cell .c-name { font-weight: 700; font-size: 12.5px; line-height: 1.32; margin-bottom: 3px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; letter-spacing: -0.01em; }
+.slot-cell .c-meta { font-size: 10.8px; line-height: 1.5; opacity: 0.82; }
+.slot-cell .c-meta .c-teacher { font-weight: 600; }
+.c0 { background: #e6f0fd; color: #1d5fbf; } .c0 .c-name { color: #0a4d94; }
+.c1 { background: #e4f7ea; color: #1e7a3c; } .c1 .c-name { color: #14602c; }
+.c2 { background: #fff2dd; color: #96601a; } .c2 .c-name { color: #7a4d0d; }
+.c3 { background: #f4e9fc; color: #7b3fa8; } .c3 .c-name { color: #63308a; }
+.c4 { background: #e0f4f9; color: #0f6e82; } .c4 .c-name { color: #0a5768; }
+.c5 { background: #fde7e7; color: #b03a3a; } .c5 .c-name { color: #96261f; }
+.c6 { background: #eceef2; color: #4a5578; } .c6 .c-name { color: #3a4463; }
+td.time-cell {
+  background: var(--apple-bg-elevated); text-align: center; vertical-align: middle; padding: 4px;
+}
+.time-cell .t-no { font-weight: 700; font-size: 12.5px; color: var(--text); }
+.time-cell .t-time { font-size: 10px; color: var(--muted); margin-top: 2.5px; font-variant-numeric: tabular-nums; }
+.empty-slot { display: flex; align-items: center; justify-content: center; height: 100%; color: #e3e3e8; font-size: 17px; user-select: none; }
+
+/* ================= modal ================= */
+.modal-mask {
+  position: fixed; inset: 0; background: rgba(0, 0, 0, 0.4);
+  -webkit-backdrop-filter: blur(6px); backdrop-filter: blur(6px);
+  z-index: 200; display: none; align-items: flex-start; justify-content: center;
+  padding: 9vh 16px 16px;
+}
+.modal-mask.show { display: flex; }
+.modal {
+  background: rgba(255, 255, 255, 0.97);
+  border-radius: 20px; width: 430px; max-width: 100%;
+  max-height: 78vh; overflow-y: auto;
+  box-shadow: var(--apple-shadow-modal);
+  animation: pop .2s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+}
+@keyframes pop { from { transform: scale(0.95) translateY(8px); opacity: 0; } to { transform: scale(1) translateY(0); opacity: 1; } }
+.modal-head { padding: 20px 22px 10px; display: flex; align-items: flex-start; gap: 12px; }
+.modal-head h3 { font-size: 17px; line-height: 1.45; flex: 1; letter-spacing: -0.02em; }
+.modal-close {
+  border: none; background: rgba(120, 120, 128, 0.14); width: 27px; height: 27px;
+  border-radius: 50%; color: #6d6d72; flex: none;
+  display: flex; align-items: center; justify-content: center;
+}
+.modal-close .ico { width: 12px; height: 12px; }
+.modal-close:hover { background: rgba(120, 120, 128, 0.26); }
+.modal-body { padding: 4px 22px 22px; }
+.kv { display: flex; padding: 8px 0; border-bottom: 1px solid rgba(0, 0, 0, 0.05); font-size: 13.5px; }
+.kv:last-child { border-bottom: none; }
+.kv .k { width: 78px; color: var(--muted); flex: none; }
+.kv .v { flex: 1; word-break: break-all; font-weight: 500; }
+.modal-actions { display: flex; gap: 8px; margin-top: 16px; flex-wrap: wrap; }
+.chip-btn {
+  border: none; background: rgba(0, 113, 227, 0.09); border-radius: 980px;
+  padding: 7px 14px; font-size: 12.5px; font-weight: 600; color: var(--blue);
+  transition: all .15s;
+}
+.chip-btn:hover { background: rgba(0, 102, 204, 0.16); }
+.chip-btn:active { transform: scale(0.97); }
+.chip-btn[disabled] { color: var(--muted); background: var(--field); cursor: default; }
+
+/* ================= directory ================= */
+.picker-section { margin-top: 26px; }
+.picker-section h3 { font-size: 15px; color: var(--text); font-weight: 700; margin-bottom: 12px; letter-spacing: -0.02em; }
+.picker-section h3 .cnt { color: var(--muted); font-weight: 500; font-size: 12.5px; }
+.dir-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 11px; }
+.dir-card {
+  background: var(--card); border: 1px solid var(--hair); border-radius: 16px;
+  padding: 15px 17px; cursor: pointer; transition: all .16s; box-shadow: var(--shadow-card);
+}
+.dir-card:hover { transform: translateY(-4px); box-shadow: var(--apple-shadow-hover); border-color: rgba(0, 102, 204, 0.4); }
+.dir-card:active { transform: scale(0.98); }
+.dir-card .d-name { font-weight: 700; font-size: 15px; letter-spacing: -0.01em; }
+.dir-card .d-meta { color: var(--muted); font-size: 12px; margin-top: 5px; line-height: 1.6; }
+.footer { text-align: center; color: var(--apple-text-tertiary); font-size: 12px; padding: var(--apple-component-gap-lg) 0 var(--apple-component-gap-sm); line-height: var(--apple-leading-body); }
+
+/* ================= mobile ================= */
+@media (max-width: 733px) {
+  .header-inner { flex-wrap: wrap; padding: 8px 16px 10px; gap: 10px; }
+  .search-wrap { order: 5; width: 100%; min-width: 0; max-width: none; margin-left: 0; }
+  .search-box { height: 40px; font-size: 16px; padding: 0 42px 0 36px; }
+  .search-icon { left: 14px; }
+  .search-clear { right: 13px; }
+  .go-btn { display: none; }
+  .suggest { top: 48px; max-height: 56vh; }
+
+  .layout { padding: 14px 16px 44px; }
+
+  .toolbar { gap: 9px; }
+  .seg { width: 100%; }
+  .seg button { flex: 1; padding: 7px 0; }
+  .seg.mode-seg { margin-left: 0; }
+  .pick-btn { width: 100%; max-width: none; min-width: 0; height: 46px; font-size: 15px; border-radius: 12px; }
+
+  .week-bar { gap: 8px; margin-bottom: 12px; }
+  .week-nav { gap: 6px; }
+  .week-nav button:not(.wk-today) { width: 36px; height: 36px; }
+  .week-label { min-width: 56px; font-size: 13.5px; }
+  .wk-dot { min-width: 34px; height: 34px; font-size: 12.5px; }
+
+  .banner { font-size: 12.5px; padding: 9px 13px; }
+
+  .grid-card { border-radius: 16px; }
+  .grid-title { padding: 14px 16px 10px; }
+  .grid-title h2 { font-size: 21px; }
+  .col-time { width: 46px; }
+  .timetable thead th { font-size: 11px; padding: 8px 2px; }
+  .slot-cell .c-week { display: none; }
+  .wk-today { min-width: 64px; height: 36px; padding: 0 16px; font-size: 13px; }
+  td.slot { height: 74px; padding: 3px; }
+  .slot-stack { gap: 3px; }
+  .slot-cell { min-height: 68px; border-radius: 9px; padding: 6px 7px; }
+  .slot-cell .c-name { font-size: 11.5px; }
+  .slot-cell .c-meta { font-size: 10px; }
+  .time-cell .t-no { font-size: 11.5px; }
+  .time-cell .t-time { font-size: 9px; }
+
+  .modal-mask { align-items: flex-end; padding: 0; }
+  .modal { width: 100%; max-width: 100%; border-radius: 20px 20px 0 0; max-height: 88vh; animation: sheetUp .3s cubic-bezier(0.2, 0.9, 0.3, 1); }
+  .modal-body { padding-bottom: max(22px, env(safe-area-inset-bottom)); }
+
+  .pick-mask { background: rgba(0, 0, 0, 0.4); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); }
+  .pick-mask.show { display: flex; align-items: flex-end; }
+  .pick-sheet {
+    position: relative; top: auto; left: auto; width: 100%; max-width: 100%;
+    border-radius: 20px 20px 0 0; max-height: 78vh;
+    animation: sheetUp .3s cubic-bezier(0.2, 0.9, 0.3, 1);
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+  .pick-grab { display: block; width: 38px; height: 5px; border-radius: 3px; background: rgba(120, 120, 128, 0.28); margin: 8px auto 2px; flex: none; }
+  .pick-head { display: flex; align-items: center; justify-content: space-between; padding: 8px 18px 6px; flex: none; }
+  .pick-title { font-size: 16px; font-weight: 700; letter-spacing: -0.02em; }
+  .pick-close { width: 30px; height: 30px; border-radius: 50%; border: none; background: rgba(120, 120, 128, 0.14); color: #6d6d72; display: flex; align-items: center; justify-content: center; }
+  .pick-close .ico { width: 12px; height: 12px; }
+  .pk-search { font-size: 16px; height: 38px; }
+
+  .dir-grid { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 9px; }
+  .dir-card { padding: 13px 14px; border-radius: 14px; }
+  .footer { padding-top: 32px; }
+}
+@keyframes sheetUp { from { transform: translateY(60%); opacity: 0.6; } to { transform: none; opacity: 1; } }
+
+/* =====================================================================
+ * rebuild extras (included in BOTH builds)
+ * 仅在「打印」与「减少动态效果」偏好下生效 —— 不影响默认屏幕渲染，
+ * 因此严格复刻版与原件在屏幕像素上保持一致。
+ * ===================================================================== */
+
+/* ---------- 打印：把交互壳去掉，输出纯课表 ---------- */
+@media print {
+  :root {
+    --apple-section-gap: 0px;
+  }
+  html, body {
+    background: #fff !important;
+    font-size: 12px;
+  }
+  .app-header,
+  .toolbar,
+  #weekBar,
+  #studentBanner,
+  #modalMask,
+  #pickMask,
+  .footer {
+    display: none !important;
+  }
+  .layout {
+    padding: 0;
+  }
+  #view-tt.view,
+  #view-dir.view {
+    display: block !important;
+  }
+  #view-dir {
+    display: none !important;
+  }
+  #gridCard.grid-card {
+    margin: 0;
+    padding: 0;
+    box-shadow: none;
+    border: 0;
+    background: #fff;
+  }
+  .grid-title {
+    margin-bottom: 8px;
+  }
+  .grid-title h2 {
+    font-size: 16px;
+  }
+  .grid-title .sub {
+    font-size: 11px;
+  }
+  .grid-scroll {
+    overflow: visible;
+    max-height: none;
+  }
+  table.timetable {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  table.timetable th,
+  table.timetable td {
+    border: 1px solid #d2d2d7 !important;
+    padding: 4px 5px;
+  }
+  .slot {
+    padding: 3px !important;
+  }
+  .slot-stack {
+    gap: 2px !important;
+  }
+  .slot-cell,
+  .slot-cell * {
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+  .slot-cell {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    padding: 3px 4px !important;
+    border-radius: 3px !important;
+  }
+  .slot-cell.c0,
+  .slot-cell.c1,
+  .slot-cell.c2,
+  .slot-cell.c3,
+  .slot-cell.c4,
+  .slot-cell.c5,
+  .slot-cell.c6 {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+  a[href]::after {
+    content: "";
+  }
+}
+
+/* ---------- 减少动态效果：把剩余动画也停掉（原版只停了换周动画） ---------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* =====================================================================
+ * 增强样式（默认视觉与基础样式一致）
+ *  1) 中文字体：系统字体栈（零外链，墙内可用）
+ *  2) 键盘无障碍焦点环
+ *  3) 暗色模式（跟随系统 prefers-color-scheme）
+ * ===================================================================== */
+
+/* ---------- 1) 中文字体：系统优先，零外部请求 ---------- */
+body {
+  font-family:
+    "SF Pro Display", "SF Pro Text", -apple-system, BlinkMacSystemFont,
+    "PingFang SC", "HarmonyOS Sans SC", "MiSans",
+    "Hiragino Sans GB", "Source Han Sans SC", "Noto Sans CJK SC",
+    "Microsoft YaHei UI", "Microsoft YaHei", "DengXian",
+    "Helvetica Neue", sans-serif;
+}
+
+/* ---------- 2) 键盘焦点 ---------- */
+:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+.slot-cell[role="button"],
+.dir-card[role="button"] {
+  cursor: pointer;
+}
+.slot-cell[role="button"]:focus-visible {
+  outline: 2px solid var(--blue);
+  outline-offset: 1px;
+  box-shadow: var(--shadow-float);
+  z-index: 3;
+}
+
+/* ---------- 3) 暗色模式 ---------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    /* Apple 设计令牌 → 深色值（覆盖后，所有引用令牌的规则自动跟随） */
+    --apple-bg-white: #1C1C1E;
+    --apple-bg-dark: #000000;
+    --apple-bg-light-gray: #000000;
+    --apple-bg-elevated: #232326;
+    --apple-text-primary: #F5F5F7;
+    --apple-text-secondary: #A1A1A6;
+    --apple-text-tertiary: #8E8E93;
+    --apple-text-on-dark: #F5F5F7;
+    --apple-text-white: #FFFFFF;
+    --apple-link-blue: #4DA3FF;
+    --apple-link-blue-hover: #6DB8FF;
+    --apple-shadow-card: 0 2px 8px rgba(0, 0, 0, .5), 0 8px 24px rgba(0, 0, 0, .6);
+    --apple-shadow-hover: 0 4px 12px rgba(0, 0, 0, .6), 0 12px 32px rgba(0, 0, 0, .7);
+    --apple-shadow-sm: 0 1px 4px rgba(0, 0, 0, .45), 0 4px 12px rgba(0, 0, 0, .55);
+    --apple-shadow-modal: 0 8px 20px rgba(0, 0, 0, .6), 0 20px 60px rgba(0, 0, 0, .8);
+
+    /* 应用别名 */
+    --bg: #000000;
+    --card: #1C1C1E;
+    --hair: rgba(255, 255, 255, .12);
+    --hair-strong: #3A3A3C;
+    --text: #F5F5F7;
+    --muted: #8E8E93;
+    --blue: #4DA3FF;
+    --blue-press: #6DB8FF;
+    --blue-soft: rgba(77, 163, 255, .16);
+    --seg-bg: #2C2C2E;
+    --field: rgba(118, 118, 128, .24);
+    --shadow-card: var(--apple-shadow-card);
+    --shadow-float: var(--apple-shadow-hover);
+    --sb-thumb: rgba(255, 255, 255, .24);
+    --sb-thumb-hover: rgba(255, 255, 255, .4);
+    --sb-thumb-active: rgba(255, 255, 255, .56);
+  }
+
+  body { background: var(--bg); color: var(--text); }
+
+  /* 半透明表面 */
+  .app-header { background: rgba(28, 28, 30, .82); }
+  .suggest { background: rgba(28, 28, 30, .94); }
+  .pick-sheet { background: rgba(28, 28, 30, .97); }
+  .modal { background: rgba(28, 28, 30, .97); }
+  .modal-mask, .pick-mask { background: rgba(0, 0, 0, .6); }
+
+  /* 搜索框 / 图标 / 圆形关闭按钮 */
+  .search-box::placeholder { color: #8E8E93; }
+  .search-icon, .pk-search-ico, .pick-chev { color: #8E8E93; }
+  .search-clear, .modal-close, .pick-close {
+    background: rgba(120, 120, 128, .32);
+    color: #C7C7CC;
+  }
+  .search-clear:hover, .modal-close:hover, .pick-close:hover {
+    background: rgba(120, 120, 128, .46);
+  }
+
+  /* 分段控件 / 选择器按钮 */
+  .seg button { color: #A1A1A6; }
+  .seg button.on { background: #3A3A3C; color: var(--text); }
+  .pick-btn:hover { border-color: #48484A; background: var(--apple-bg-elevated); }
+  .week-nav button:not(.wk-today) { background: var(--card); }
+
+  /* 表格与卡片分隔线 */
+  .timetable th, .timetable td {
+    border-bottom-color: rgba(255, 255, 255, .08);
+    border-right-color: rgba(255, 255, 255, .06);
+  }
+  .timetable thead th:first-child { border-bottom-color: rgba(255, 255, 255, .08); }
+  .kv { border-bottom-color: rgba(255, 255, 255, .08); }
+  .empty-slot { color: rgba(255, 255, 255, .16); }
+
+  /* 周次圆点 */
+  .wk-dot { color: #98989D; }
+  .wk-dot.cur { color: #FFFFFF; }
+
+  /* 名单横幅（仅内部版出现） */
+  .banner { border-color: rgba(77, 163, 255, .28); color: #BBDCFF; }
+  .banner-x { background: rgba(77, 163, 255, .2); color: var(--blue); }
+  .banner-x:hover { background: rgba(77, 163, 255, .3); }
+
+  /* 弹窗动作 chip */
+  .chip-btn { background: rgba(77, 163, 255, .16); color: var(--blue); }
+  .chip-btn:hover { background: rgba(77, 163, 255, .26); }
+
+  /* 移动端选择器 */
+  .pick-grab { background: rgba(255, 255, 255, .3); }
+  .pk-row:hover { background: rgba(77, 163, 255, .14); }
+  .pk-row.cur { background: rgba(77, 163, 255, .2); }
+
+  /* 搜索建议 */
+  .suggest-item:hover, .suggest-item.active { background: rgba(77, 163, 255, .16); }
+  .s-tag.course { background: rgba(52, 199, 89, .22); color: #7CE0A1; }
+  .s-tag.class { background: rgba(77, 163, 255, .2); color: #9CCBFF; }
+  .s-tag.person { background: rgba(255, 159, 10, .2); color: #FFC46B; }
+  .s-tag.teacher { background: rgba(191, 90, 242, .22); color: #DDA6F5; }
+  .s-tag.room { background: rgba(90, 200, 250, .2); color: #9BE3FF; }
+
+  /* 课程色板（深色） */
+  .slot-cell.c0 { background: rgba(41, 151, 255, .18); color: #C7E0FF; }
+  .slot-cell.c1 { background: rgba(48, 209, 88, .16); color: #A8E8B9; }
+  .slot-cell.c2 { background: rgba(255, 159, 10, .18); color: #F3C77E; }
+  .slot-cell.c3 { background: rgba(191, 90, 242, .18); color: #DCA8F5; }
+  .slot-cell.c4 { background: rgba(90, 200, 250, .18); color: #9BE3F5; }
+  .slot-cell.c5 { background: rgba(255, 69, 58, .18); color: #F5A6A0; }
+  .slot-cell.c6 { background: rgba(142, 142, 147, .22); color: #C7C7CC; }
+  .slot-cell.c0 .c-name { color: #DDEBFF; }
+  .slot-cell.c1 .c-name { color: #D2F5DA; }
+  .slot-cell.c2 .c-name { color: #FFE1B0; }
+  .slot-cell.c3 .c-name { color: #EFD3FF; }
+  .slot-cell.c4 .c-name { color: #D0F3FF; }
+  .slot-cell.c5 .c-name { color: #FFD2CF; }
+  .slot-cell.c6 .c-name { color: #E5E5EA; }
+}
+  </style>
+</head>
+<body>
+<div id="app"></div>
+<noscript>本页需要启用 JavaScript 才能显示课表。</noscript>
+<script>
+window.__TT_DATA__ = {"title":"2026-2027学年秋  班级课表","semesterStart":"2026-08-31","periods":[{"no":1,"time":"08:30-10:05","section":"上午"},{"no":2,"time":"10:25-12:00","section":"上午"},{"no":3,"time":"14:30-16:05","section":"下午"},{"no":4,"time":"16:25-18:00","section":"下午"},{"no":5,"time":"19:10-20:45","section":"晚上"}],"classes":[{"name":"工业CA261","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排"],"entries":[{"course":"高等数学IA","code":"NZ31340101-01","teacher":"王东","weekText":"3-19周","klass":"工业CA261(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-01","teacher":"路振国","weekText":"3-19周","klass":"工业CA261(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":3},{"course":"计算思维与人工智能基础II","code":"CA261B3120-FS01","teacher":"安亚军","weekText":"4-11周","klass":"工业CA261(30人)","room":"教学C楼-C2-301","weeks":[4,5,6,7,8,9,10,11],"day":1,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-01","teacher":"陆洋","weekText":"5-20周单周","klass":"工业CA261(30人)","room":"教学B楼-B-102","weeks":[5,7,9,11,13,15,17,19],"day":1,"period":5},{"course":"大学语文","code":"NZ11060420-01","teacher":"贲鸿雁","weekText":"3-10周","klass":"工业CA261(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":1},{"course":"心理健康教育A","code":"NZ11060211-01","teacher":"段放","weekText":"3-11周","klass":"工业CA261(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":2},{"course":"学术英语综合A","code":"GNZ13A3130-01","teacher":"陆洋","weekText":"4-19周","klass":"工业CA261(30人)","room":"教学B楼-B103","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":2,"period":3},{"course":"工业工程专业导论课","code":"CA314C3110-01","teacher":"李蒙","weekText":"3-10周","klass":"工业CA261(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-01","teacher":"王东","weekText":"3-19周","klass":"工业CA261(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"国际交流与沟通","code":"GNZ32X3120-01","teacher":"Paul","weekText":"3-18周","klass":"工业CA261(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":3,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-01","teacher":"路振国","weekText":"3-8周单周","klass":"工业CA261(30人)","room":"教学B楼-B-301","weeks":[3,5,7],"day":3,"period":4},{"course":"计算思维与人工智能基础II","code":"CA261B3120-01","teacher":"安亚军","weekText":"3-10周","klass":"工业CA261(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":1},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"工业CA261(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"管理学原理","code":"CA213C3130-01","teacher":"王俊阁","weekText":"4-19周","klass":"工业CA261(30人)","room":"教学B楼-B-110","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":3},{"course":"英语视听","code":"GNZ31X3120-01","teacher":"张怡颖","weekText":"3-18周","klass":"工业CA261(30人)","room":"教学C楼-C2-103","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":4,"period":4},{"course":"大学生职业发展与就业指导A","code":"CA11060202-01","teacher":"邢娇娇","weekText":"3-7周","klass":"工业CA261(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7],"day":5,"period":1},{"course":"大学生职业发展与就业指导A","code":"CA11060202-01","teacher":"郝丽娟","weekText":"8-11周","klass":"工业CA261(30人)","room":"教学B楼-B-301","weeks":[8,9,10,11],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-01","teacher":"王东","weekText":"3-12周","klass":"工业CA261(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"工业CA262","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排"],"entries":[{"course":"国际交流与沟通","code":"GNZ32X3120-02","teacher":"Paul","weekText":"3-18周","klass":"工业CA262(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":1},{"course":"高等数学IA","code":"NZ31340101-01","teacher":"王东","weekText":"3-19周","klass":"工业CA262(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-01","teacher":"路振国","weekText":"3-19周","klass":"工业CA262(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":3},{"course":"计算思维与人工智能基础II","code":"CA261B3120-FS01","teacher":"安亚军","weekText":"4-11周","klass":"工业CA262(30人)","room":"教学C楼-C2-301","weeks":[4,5,6,7,8,9,10,11],"day":1,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-02","teacher":"陆洋","weekText":"3-18周双周","klass":"工业CA262(30人)","room":"教学B楼-B-102","weeks":[4,6,8,10,12,14,16,18],"day":1,"period":5},{"course":"大学语文","code":"NZ11060420-01","teacher":"贲鸿雁","weekText":"3-10周","klass":"工业CA262(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":1},{"course":"心理健康教育A","code":"NZ11060211-01","teacher":"段放","weekText":"3-11周","klass":"工业CA262(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":2},{"course":"英语视听","code":"GNZ31X3120-02","teacher":"张怡颖","weekText":"3-18周","klass":"工业CA262(30人)","room":"教学C楼-C2-103","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":4},{"course":"工业工程专业导论课","code":"CA314C3110-01","teacher":"李蒙","weekText":"3-10周","klass":"工业CA262(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-01","teacher":"王东","weekText":"3-19周","klass":"工业CA262(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"学术英语综合A","code":"GNZ13A3130-02","teacher":"陆洋","weekText":"4-19周","klass":"工业CA262(30人)","room":"教学B楼-B103","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-01","teacher":"路振国","weekText":"3-8周单周","klass":"工业CA262(30人)","room":"教学B楼-B-301","weeks":[3,5,7],"day":3,"period":4},{"course":"计算思维与人工智能基础II","code":"CA261B3120-01","teacher":"安亚军","weekText":"3-10周","klass":"工业CA262(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":1},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"工业CA262(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"管理学原理","code":"CA213C3130-01","teacher":"王俊阁","weekText":"4-19周","klass":"工业CA262(30人)","room":"教学B楼-B-110","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":3},{"course":"大学生职业发展与就业指导A","code":"CA11060202-01","teacher":"邢娇娇","weekText":"3-7周","klass":"工业CA262(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7],"day":5,"period":1},{"course":"大学生职业发展与就业指导A","code":"CA11060202-01","teacher":"郝丽娟","weekText":"8-11周","klass":"工业CA262(30人)","room":"教学B楼-B-301","weeks":[8,9,10,11],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-01","teacher":"王东","weekText":"3-12周","klass":"工业CA262(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"数管CA261","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排"],"entries":[{"course":"高等数学IA","code":"NZ31340101-02","teacher":"崔园园","weekText":"3-19周","klass":"数管CA261(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"英语视听","code":"GNZ31X3120-03","teacher":"张怡颖","weekText":"3-18周","klass":"数管CA261(30人)","room":"教学C楼-C2-103","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":2},{"course":"心理健康教育A","code":"NZ11060211-05","teacher":"段放","weekText":"3-11周","klass":"数管CA261(30人)","room":"教学B楼-B-211","weeks":[3,4,5,6,7,8,9,10,11],"day":1,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-02","teacher":"路振国","weekText":"3-19周","klass":"数管CA261(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":4},{"course":"国际交流与沟通","code":"GNZ32X3120-03","teacher":"Francesco","weekText":"3-18周","klass":"数管CA261(30人)","room":"教学B楼-B-304","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":1},{"course":"大数据管理与应用专业导论课","code":"CA315C3110-01","teacher":"张志颖","weekText":"5-6周","klass":"数管CA261(30人)","room":"教学B楼-B-303","weeks":[5,6],"day":2,"period":2},{"course":"大数据管理与应用专业导论课","code":"CA315C3110-01","teacher":"杨柳","weekText":"7-8周","klass":"数管CA261(30人)","room":"教学B楼-B-303","weeks":[7,8],"day":2,"period":2},{"course":"大数据管理与应用专业导论课","code":"CA315C3110-01","teacher":"邓美红","weekText":"9-12周","klass":"数管CA261(30人)","room":"教学B楼-B-303","weeks":[9,10,11,12],"day":2,"period":2},{"course":"计算思维与人工智能基础II","code":"CA261B3120-02","teacher":"安亚军","weekText":"3-10周","klass":"数管CA261(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":3},{"course":"大学语文","code":"NZ11060420-02","teacher":"贲鸿雁","weekText":"3-10周","klass":"数管CA261(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":4},{"course":"思想道德与法治","code":"GNZ313A3130-02","teacher":"路振国","weekText":"3-8周单周","klass":"数管CA261(30人)","room":"教学B楼-B-301","weeks":[3,5,7],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-02","teacher":"崔园园","weekText":"3-19周","klass":"数管CA261(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"学术英语综合A","code":"GNZ13A3130-03","teacher":"董欣然","weekText":"4-19周","klass":"数管CA261(30人)","room":"教学B楼-B-301","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":3},{"course":"管理学原理","code":"CA213C3130-02","teacher":"王俊阁","weekText":"4-19周","klass":"数管CA261(30人)","room":"教学B楼-B-110","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":1},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"数管CA261(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"学术英语综合A","code":"GNZ13A3130-03","teacher":"董欣然","weekText":"3-18周双周","klass":"数管CA261(30人)","room":"教学B楼-B-301","weeks":[4,6,8,10,12,14,16,18],"day":4,"period":3},{"course":"计算思维与人工智能基础II","code":"CA261B3120-FS02","teacher":"安亚军","weekText":"4-11周","klass":"数管CA261(30人)","room":"教学C楼-C2-301","weeks":[4,5,6,7,8,9,10,11],"day":4,"period":4},{"course":"大学生职业发展与就业指导A","code":"CA11060202-02","teacher":"王肖蓉","weekText":"3-11周","klass":"数管CA261(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-02","teacher":"崔园园","weekText":"3-12周","klass":"数管CA261(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"数管CA262","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排"],"entries":[{"course":"高等数学IA","code":"NZ31340101-02","teacher":"崔园园","weekText":"3-19周","klass":"数管CA262(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"学术英语综合A","code":"GNZ13A3130-04","teacher":"董欣然","weekText":"4-19周","klass":"数管CA262(30人)","room":"教学B楼-B-301","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"心理健康教育A","code":"NZ11060211-05","teacher":"段放","weekText":"3-11周","klass":"数管CA262(30人)","room":"教学B楼-B-211","weeks":[3,4,5,6,7,8,9,10,11],"day":1,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-02","teacher":"路振国","weekText":"3-19周","klass":"数管CA262(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-04","teacher":"董欣然","weekText":"5-20周单周","klass":"数管CA262(30人)","room":"教学B楼-B-303","weeks":[5,7,9,11,13,15,17,19],"day":2,"period":1},{"course":"大数据管理与应用专业导论课","code":"CA315C3110-01","teacher":"张志颖","weekText":"5-6周","klass":"数管CA262(30人)","room":"教学B楼-B-303","weeks":[5,6],"day":2,"period":2},{"course":"大数据管理与应用专业导论课","code":"CA315C3110-01","teacher":"杨柳","weekText":"7-8周","klass":"数管CA262(30人)","room":"教学B楼-B-303","weeks":[7,8],"day":2,"period":2},{"course":"大数据管理与应用专业导论课","code":"CA315C3110-01","teacher":"邓美红","weekText":"9-12周","klass":"数管CA262(30人)","room":"教学B楼-B-303","weeks":[9,10,11,12],"day":2,"period":2},{"course":"计算思维与人工智能基础II","code":"CA261B3120-02","teacher":"安亚军","weekText":"3-10周","klass":"数管CA262(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":3},{"course":"大学语文","code":"NZ11060420-02","teacher":"贲鸿雁","weekText":"3-10周","klass":"数管CA262(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":4},{"course":"思想道德与法治","code":"GNZ313A3130-02","teacher":"路振国","weekText":"3-8周单周","klass":"数管CA262(30人)","room":"教学B楼-B-301","weeks":[3,5,7],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-02","teacher":"崔园园","weekText":"3-19周","klass":"数管CA262(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"英语视听","code":"GNZ31X3120-04","teacher":"张怡颖","weekText":"3-18周","klass":"数管CA262(30人)","room":"教学C楼-C2-105","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":3,"period":4},{"course":"管理学原理","code":"CA213C3130-02","teacher":"王俊阁","weekText":"4-19周","klass":"数管CA262(30人)","room":"教学B楼-B-110","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":1},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"数管CA262(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"国际交流与沟通","code":"GNZ32X3120-04","teacher":"Francesco","weekText":"3-18周","klass":"数管CA262(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":4,"period":3},{"course":"计算思维与人工智能基础II","code":"CA261B3120-FS02","teacher":"安亚军","weekText":"4-11周","klass":"数管CA262(30人)","room":"教学C楼-C2-301","weeks":[4,5,6,7,8,9,10,11],"day":4,"period":4},{"course":"大学生职业发展与就业指导A","code":"CA11060202-02","teacher":"王肖蓉","weekText":"3-11周","klass":"数管CA262(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-02","teacher":"崔园园","weekText":"3-12周","klass":"数管CA262(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"物联235","title":"2026-2027学年秋  班级课表","notes":["专业方向实训  (G313C31100-01)  11-20周  刘佳，刘明，谭有倩，郝海辉  无地点安排","专业方向实训  (G313C31100-01)  11-20周  郝海辉，刘明，刘佳，谭有倩  无地点安排","专业方向实训  (G313C31100-01)  11-20周  谭有倩，刘明，刘佳，郝海辉  无地点安排","专业方向实训  (G313C31100-01)  11-20周  刘明，刘佳，谭有倩，郝海辉  无地点安排"],"entries":[{"course":"习近平新时代中国特色社会主义思想概论","code":"G1313A3110-01","teacher":"陈海燕","weekText":"4-9周","klass":"物联235(12人)","room":"教学B楼-B101","weeks":[4,5,6,7,8,9],"day":1,"period":1},{"course":"网络安全与攻防技术","code":"G1313C3125-01","teacher":"张斌","weekText":"1-10周","klass":"物联235(12人)","room":"教学C楼-C2-104","weeks":[1,2,3,4,5,6,7,8,9,10],"day":2,"period":4},{"course":"复变函数与积分变换","code":"GNZ13A3120-01","teacher":"李斌","weekText":"2-9周","klass":"物联235(12人)","room":"教学B楼-B101","weeks":[2,3,4,5,6,7,8,9],"day":3,"period":1},{"course":"网络安全与攻防技术","code":"G1313C3125-01","teacher":"张斌","weekText":"1-10周","klass":"物联235(12人)","room":"教学C楼-C2-104","weeks":[1,2,3,4,5,6,7,8,9,10],"day":4,"period":1},{"course":"复变函数与积分变换","code":"GNZ13A3120-01","teacher":"李斌","weekText":"2-9周","klass":"物联235(12人)","room":"教学B楼-B101","weeks":[2,3,4,5,6,7,8,9],"day":5,"period":1}]},{"name":"物联246","title":"2026-2027学年秋  班级课表","notes":[],"entries":[{"course":"大学物理IA","code":"G0713A3135-01","teacher":"刘会丽","weekText":"1-19周","klass":"物联246(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"RFID原理及应用","code":"G0714A3120-01","teacher":"胡和智","weekText":"1-16周","klass":"物联246(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":1,"period":3},{"course":"数据库原理及应用","code":"G0724A3125-01","teacher":"张元好","weekText":"1-19周","klass":"物联246(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":2,"period":1},{"course":"复变函数与积分变换II","code":"G131343140-01","teacher":"李斌","weekText":"4-19周","klass":"物联246(30人)","room":"教学B楼-B-201","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":2,"period":2},{"course":"RFID原理及应用实验","code":"G0714A3110-01","teacher":"胡和智","weekText":"7-16周","klass":"物联246(30人)","room":"教学A楼-A-301","weeks":[7,8,9,10,11,12,13,14,15,16],"day":2,"period":4},{"course":"大学物理IA","code":"G0713A3135-01","teacher":"刘会丽","weekText":"1-18周单周","klass":"物联246(30人)","room":"教学B楼-B-201","weeks":[1,3,5,7,9,11,13,15,17],"day":3,"period":1},{"course":"数据库原理及应用实验","code":"G0724A3110-01","teacher":"张元好","weekText":"1-3,5,7,9,11,13,15,17周","klass":"物联246(30人)","room":"教学C楼-C2-201","weeks":[1,2,3,5,7,9,11,13,15,17],"day":3,"period":3},{"course":"数据库原理及应用","code":"G0724A3125-01","teacher":"张元好","weekText":"第1周","klass":"物联246(30人)","room":"教学B楼-B-201","weeks":[1],"day":4,"period":1},{"course":"大学物理实验IA","code":"G0713A3115-01","teacher":"李荣美","weekText":"6-15周","klass":"物联246(30人)","room":"教学B楼-B-211","weeks":[6,7,8,9,10,11,12,13,14,15],"day":4,"period":3},{"course":"大学物理实验IA","code":"G0713A3115-01","teacher":"李荣美","weekText":"6-15周","klass":"物联246(30人)","room":"教学B楼-B-211","weeks":[6,7,8,9,10,11,12,13,14,15],"day":4,"period":4},{"course":"复变函数与积分变换II","code":"G131343140-01","teacher":"李斌","weekText":"4-19周","klass":"物联246(30人)","room":"教学B楼-B-201","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":2}]},{"name":"物联247","title":"2026-2027学年秋  班级课表","notes":[],"entries":[{"course":"大学物理IA","code":"G0713A3135-01","teacher":"刘会丽","weekText":"1-19周","klass":"物联247(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"RFID原理及应用","code":"G0714A3120-01","teacher":"胡和智","weekText":"1-16周","klass":"物联247(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":1,"period":3},{"course":"数据库原理及应用","code":"G0724A3125-01","teacher":"张元好","weekText":"1-19周","klass":"物联247(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":2,"period":1},{"course":"复变函数与积分变换II","code":"G131343140-01","teacher":"李斌","weekText":"4-19周","klass":"物联247(30人)","room":"教学B楼-B-201","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":2,"period":2},{"course":"RFID原理及应用实验","code":"G0714A3110-01","teacher":"胡和智","weekText":"7-16周","klass":"物联247(30人)","room":"教学A楼-A-301","weeks":[7,8,9,10,11,12,13,14,15,16],"day":2,"period":4},{"course":"大学物理IA","code":"G0713A3135-01","teacher":"刘会丽","weekText":"1-18周单周","klass":"物联247(30人)","room":"教学B楼-B-201","weeks":[1,3,5,7,9,11,13,15,17],"day":3,"period":1},{"course":"数据库原理及应用实验","code":"G0724A3110-01","teacher":"张元好","weekText":"1-3,5,7,9,11,13,15,17周","klass":"物联247(30人)","room":"教学C楼-C2-201","weeks":[1,2,3,5,7,9,11,13,15,17],"day":3,"period":3},{"course":"数据库原理及应用","code":"G0724A3125-01","teacher":"张元好","weekText":"第1周","klass":"物联247(30人)","room":"教学B楼-B-201","weeks":[1],"day":4,"period":1},{"course":"大学物理实验IA","code":"G0713A3115-01","teacher":"李荣美","weekText":"6-15周","klass":"物联247(30人)","room":"教学B楼-B-211","weeks":[6,7,8,9,10,11,12,13,14,15],"day":4,"period":3},{"course":"大学物理实验IA","code":"G0713A3115-01","teacher":"李荣美","weekText":"6-15周","klass":"物联247(30人)","room":"教学B楼-B-211","weeks":[6,7,8,9,10,11,12,13,14,15],"day":4,"period":4},{"course":"复变函数与积分变换II","code":"G131343140-01","teacher":"李斌","weekText":"4-19周","klass":"物联247(30人)","room":"教学B楼-B-201","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":2}]},{"name":"物联NZ241","title":"2026-2027学年秋  班级课表","notes":["物联网应用系统实践2  (GNZ07C3110-01)  第19周  郝海辉  无地点安排"],"entries":[{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ241(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ241(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":2},{"course":"计算机网络","code":"GNZ15B3140-01","teacher":"刘佳","weekText":"3-18周","klass":"物联NZ241(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":3},{"course":"操作系统","code":"GNZ14B3135-01","teacher":"谭有倩","weekText":"3-18周","klass":"物联NZ241(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"RFID原理及应用","code":"NZ3141X104-01","teacher":"郝海辉","weekText":"2-17周","klass":"物联NZ241(30人)","room":"教学A楼-A-301","weeks":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"day":2,"period":1},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ241(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":2,"period":2},{"course":"软件工程设计与构建实验","code":"NZ00159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠","weekText":"2-5,7-12周","klass":"物联NZ241(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":2,"period":3},{"course":"党史","code":"NZ22060303-01","teacher":"柳海燕","weekText":"1-8周","klass":"物联NZ241(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8],"day":2,"period":4},{"course":"计算机图形学编程实验","code":"NZ00159235-01","teacher":"Liu Juncheng，谭有倩","weekText":"2-5,7-12周","klass":"物联NZ241(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":1},{"course":"计算机网络","code":"GNZ15B3140-01","teacher":"刘佳","weekText":"3-18周单周","klass":"物联NZ241(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":2},{"course":"人工智能基础","code":"NZ11060416-01","teacher":"柴洪涛","weekText":"1-8周","klass":"物联NZ241(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8],"day":3,"period":3},{"course":"网络开发实验","code":"NZ00158258-01","teacher":"Andie，张元好","weekText":"2-5,7-12周","klass":"物联NZ241(30人)","room":"教学C楼-C2-301","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ241(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":1},{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ241(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":2},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ241(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":3},{"course":"操作系统","code":"GNZ14B3135-01","teacher":"谭有倩","weekText":"3-6周","klass":"物联NZ241(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6],"day":4,"period":4},{"course":"计算机网络","code":"GNZ15B3140-FS01","teacher":"刘佳","weekText":"6-13周","klass":"物联NZ241(30人)","room":"教学C楼-C2-201","weeks":[6,7,8,9,10,11,12,13],"day":5,"period":1},{"course":"操作系统","code":"GNZ14B3135-FS01","teacher":"谭有倩","weekText":"8-15周","klass":"物联NZ241(30人)","room":"教学C楼-C2-301","weeks":[8,9,10,11,12,13,14,15],"day":5,"period":2}]},{"name":"物联NZ242","title":"2026-2027学年秋  班级课表","notes":["物联网应用系统实践2  (GNZ07C3110-01)  第19周  郝海辉  无地点安排"],"entries":[{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ242(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ242(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":2},{"course":"计算机网络","code":"GNZ15B3140-01","teacher":"刘佳","weekText":"3-18周","klass":"物联NZ242(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":3},{"course":"操作系统","code":"GNZ14B3135-01","teacher":"谭有倩","weekText":"3-18周","klass":"物联NZ242(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"RFID原理及应用","code":"NZ3141X104-01","teacher":"郝海辉","weekText":"2-17周","klass":"物联NZ242(30人)","room":"教学A楼-A-301","weeks":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"day":2,"period":1},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ242(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":2,"period":2},{"course":"软件工程设计与构建实验","code":"NZ00159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠","weekText":"2-5,7-12周","klass":"物联NZ242(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":2,"period":3},{"course":"党史","code":"NZ22060303-01","teacher":"柳海燕","weekText":"1-8周","klass":"物联NZ242(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8],"day":2,"period":4},{"course":"计算机图形学编程实验","code":"NZ00159235-01","teacher":"Liu Juncheng，谭有倩","weekText":"2-5,7-12周","klass":"物联NZ242(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":1},{"course":"计算机网络","code":"GNZ15B3140-01","teacher":"刘佳","weekText":"3-18周单周","klass":"物联NZ242(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":2},{"course":"人工智能基础","code":"NZ11060416-01","teacher":"柴洪涛","weekText":"1-8周","klass":"物联NZ242(30人)","room":"教学B楼-B-201","weeks":[1,2,3,4,5,6,7,8],"day":3,"period":3},{"course":"网络开发实验","code":"NZ00158258-01","teacher":"Andie，张元好","weekText":"2-5,7-12周","klass":"物联NZ242(30人)","room":"教学C楼-C2-301","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ242(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":1},{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ242(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":2},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ242(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":3},{"course":"操作系统","code":"GNZ14B3135-01","teacher":"谭有倩","weekText":"3-6周","klass":"物联NZ242(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6],"day":4,"period":4},{"course":"计算机网络","code":"GNZ15B3140-FS01","teacher":"刘佳","weekText":"6-13周","klass":"物联NZ242(30人)","room":"教学C楼-C2-201","weeks":[6,7,8,9,10,11,12,13],"day":5,"period":1},{"course":"操作系统","code":"GNZ14B3135-FS01","teacher":"谭有倩","weekText":"8-15周","klass":"物联NZ242(30人)","room":"教学C楼-C2-301","weeks":[8,9,10,11,12,13,14,15],"day":5,"period":2}]},{"name":"物联NZ243","title":"2026-2027学年秋  班级课表","notes":["物联网应用系统实践2  (GNZ07C3110-02)  第19周  庞晶  无地点安排"],"entries":[{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ243(29人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ243(29人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":2},{"course":"操作系统","code":"GNZ14B3135-02","teacher":"谭有倩","weekText":"3-18周","klass":"物联NZ243(29人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":3},{"course":"计算机网络","code":"GNZ15B3140-02","teacher":"郭淑霞","weekText":"3-18周","klass":"物联NZ243(29人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"人工智能基础","code":"NZ11060416-02","teacher":"张艳红","weekText":"1-8周","klass":"物联NZ243(29人)","room":"教学B楼-B-203","weeks":[1,2,3,4,5,6,7,8],"day":2,"period":1},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ243(29人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":2,"period":2},{"course":"RFID原理及应用","code":"NZ3141X104-02","teacher":"庞晶","weekText":"2-17周","klass":"物联NZ243(29人)","room":"教学A楼-A-301","weeks":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"day":2,"period":3},{"course":"软件工程设计与构建实验","code":"NZ00159251-02","teacher":"Xiaofan Chen，Fabiana，李艳萍","weekText":"2-5,7-12周","klass":"物联NZ243(29人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":2,"period":4},{"course":"计算机网络","code":"GNZ15B3140-02","teacher":"郭淑霞","weekText":"3-18周单周","klass":"物联NZ243(29人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":1},{"course":"计算机图形学编程实验","code":"NZ00159235-02","teacher":"Liu Juncheng，韩雪","weekText":"2-5,7-12周","klass":"物联NZ243(29人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":2},{"course":"网络开发实验","code":"NZ00158258-02","teacher":"Andie，姜子敬","weekText":"2-5,7-12周","klass":"物联NZ243(29人)","room":"教学C楼-C2-301","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":3},{"course":"操作系统","code":"GNZ14B3135-02","teacher":"谭有倩","weekText":"3-6周","klass":"物联NZ243(29人)","room":"教学B楼-B-203","weeks":[3,4,5,6],"day":3,"period":4},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ243(29人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":1},{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ243(29人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":2},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ243(29人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":3},{"course":"党史","code":"NZ22060303-02","teacher":"柳海燕","weekText":"1-8周","klass":"物联NZ243(29人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8],"day":4,"period":4},{"course":"操作系统","code":"GNZ14B3135-FS02","teacher":"谭有倩","weekText":"8-15周","klass":"物联NZ243(29人)","room":"教学C楼-C2-301","weeks":[8,9,10,11,12,13,14,15],"day":5,"period":1},{"course":"计算机网络","code":"GNZ15B3140-FS02","teacher":"郭淑霞","weekText":"6-13周","klass":"物联NZ243(29人)","room":"教学C楼-C2-201","weeks":[6,7,8,9,10,11,12,13],"day":5,"period":2}]},{"name":"物联NZ244","title":"2026-2027学年秋  班级课表","notes":["物联网应用系统实践2  (GNZ07C3110-02)  第19周  庞晶  无地点安排"],"entries":[{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ244(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ244(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":2},{"course":"操作系统","code":"GNZ14B3135-02","teacher":"谭有倩","weekText":"3-18周","klass":"物联NZ244(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":3},{"course":"计算机网络","code":"GNZ15B3140-02","teacher":"郭淑霞","weekText":"3-18周","klass":"物联NZ244(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"人工智能基础","code":"NZ11060416-02","teacher":"张艳红","weekText":"1-8周","klass":"物联NZ244(30人)","room":"教学B楼-B-203","weeks":[1,2,3,4,5,6,7,8],"day":2,"period":1},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ244(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":2,"period":2},{"course":"RFID原理及应用","code":"NZ3141X104-02","teacher":"庞晶","weekText":"2-17周","klass":"物联NZ244(30人)","room":"教学A楼-A-301","weeks":[2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17],"day":2,"period":3},{"course":"软件工程设计与构建实验","code":"NZ00159251-02","teacher":"Xiaofan Chen，Fabiana，李艳萍","weekText":"2-5,7-12周","klass":"物联NZ244(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":2,"period":4},{"course":"计算机网络","code":"GNZ15B3140-02","teacher":"郭淑霞","weekText":"3-18周单周","klass":"物联NZ244(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":1},{"course":"计算机图形学编程实验","code":"NZ00159235-02","teacher":"Liu Juncheng，韩雪","weekText":"2-5,7-12周","klass":"物联NZ244(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":2},{"course":"网络开发实验","code":"NZ00158258-02","teacher":"Andie，姜子敬","weekText":"2-5,7-12周","klass":"物联NZ244(30人)","room":"教学C楼-C2-301","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":3},{"course":"操作系统","code":"GNZ14B3135-02","teacher":"谭有倩","weekText":"3-6周","klass":"物联NZ244(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6],"day":3,"period":4},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ244(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":1},{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ244(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":2},{"course":"计算机图形学编程","code":"NZ31159235-01","teacher":"Liu Juncheng，韩雪，谭有倩","weekText":"1-5,7-13周","klass":"物联NZ244(30人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":3},{"course":"党史","code":"NZ22060303-02","teacher":"柳海燕","weekText":"1-8周","klass":"物联NZ244(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8],"day":4,"period":4},{"course":"操作系统","code":"GNZ14B3135-FS02","teacher":"谭有倩","weekText":"8-15周","klass":"物联NZ244(30人)","room":"教学C楼-C2-301","weeks":[8,9,10,11,12,13,14,15],"day":5,"period":1},{"course":"计算机网络","code":"GNZ15B3140-FS02","teacher":"郭淑霞","weekText":"6-13周","klass":"物联NZ244(30人)","room":"教学C楼-C2-201","weeks":[6,7,8,9,10,11,12,13],"day":5,"period":2}]},{"name":"物联NZ245","title":"2026-2027学年秋  班级课表","notes":[],"entries":[{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ245(5人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ245(5人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":2},{"course":"操作系统","code":"GNZ14B3135-02","teacher":"谭有倩","weekText":"3-18周","klass":"物联NZ245(5人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":3},{"course":"计算机网络","code":"GNZ15B3140-02","teacher":"郭淑霞","weekText":"3-18周","klass":"物联NZ245(5人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"软件工程设计与构建实验","code":"NZ00159251-02","teacher":"Xiaofan Chen，Fabiana，李艳萍","weekText":"2-5,7-12周","klass":"物联NZ245(5人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":2,"period":4},{"course":"计算机网络","code":"GNZ15B3140-02","teacher":"郭淑霞","weekText":"3-18周单周","klass":"物联NZ245(5人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":1},{"course":"项目管理","code":"NZ11060410-01","teacher":"张会议","weekText":"1-8周","klass":"物联NZ245(5人)","room":"教学B楼-B103","weeks":[1,2,3,4,5,6,7,8],"day":3,"period":2},{"course":"网络开发实验","code":"NZ00158258-02","teacher":"Andie，姜子敬","weekText":"2-5,7-12周","klass":"物联NZ245(5人)","room":"教学C楼-C2-301","weeks":[2,3,4,5,7,8,9,10,11,12],"day":3,"period":3},{"course":"操作系统","code":"GNZ14B3135-02","teacher":"谭有倩","weekText":"3-6周","klass":"物联NZ245(5人)","room":"教学B楼-B-203","weeks":[3,4,5,6],"day":3,"period":4},{"course":"软件工程设计与构建","code":"NZ31159251-01","teacher":"Xiaofan Chen，Fabiana，高敬惠，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ245(5人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":1},{"course":"网络开发","code":"NZ31158258-01","teacher":"Andie，张元好，姜子敬","weekText":"1-5,7-13周","klass":"物联NZ245(5人)","room":"教学B楼-B-310","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":4,"period":2},{"course":"操作系统","code":"GNZ14B3135-FS02","teacher":"谭有倩","weekText":"8-15周","klass":"物联NZ245(5人)","room":"教学C楼-C2-301","weeks":[8,9,10,11,12,13,14,15],"day":5,"period":1},{"course":"计算机网络","code":"GNZ15B3140-FS02","teacher":"郭淑霞","weekText":"6-13周","klass":"物联NZ245(5人)","room":"教学C楼-C2-201","weeks":[6,7,8,9,10,11,12,13],"day":5,"period":2}]},{"name":"物联NZ251","title":"2026-2027学年秋  班级课表","notes":["系统设计与开发2  (GNZ23C3110-01)  第17周  庞晶  无地点安排"],"entries":[{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ251(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"创业基础","code":"NZ11060204-01","teacher":"高金乔","weekText":"1-15周","klass":"物联NZ251(30人)","room":"教学B楼-B-211","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"day":1,"period":2},{"course":"马克思主义基本原理","code":"GNZ31A3130-01","teacher":"柳海燕","weekText":"1-16,18-19周","klass":"物联NZ251(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":1,"period":3},{"course":"学术英语拓展B","code":"GNZ17X3120-01","teacher":"时维娜","weekText":"1-16周","klass":"物联NZ251(30人)","room":"教学C楼-C2-103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":1,"period":4},{"course":"学术英语阅读C","code":"GNZ06A3120-01","teacher":"姜亚珍","weekText":"3-16,18-19周","klass":"物联NZ251(30人)","room":"教学B楼-B-102","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":2,"period":1},{"course":"概率论与数理统计","code":"NZ31340104-01","teacher":"张婕","weekText":"3-16,18-19周","klass":"物联NZ251(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":2,"period":2},{"course":"计算机组成原理","code":"NZ31410106-01","teacher":"侯石柱","weekText":"3-16,18-19周","klass":"物联NZ251(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":2,"period":3},{"course":"创业基础","code":"NZ11060204-01","teacher":"高金乔","weekText":"13-15周","klass":"物联NZ251(30人)","room":"教学B楼-B-211","weeks":[13,14,15],"day":2,"period":5},{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ251(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":3,"period":1},{"course":"马克思主义基本原理","code":"GNZ31A3130-01","teacher":"柳海燕","weekText":"1-2周","klass":"物联NZ251(30人)","room":"教学B楼-B-110","weeks":[1,2],"day":3,"period":2},{"course":"学术英语写作C","code":"GNZ03A3120-01","teacher":"赵春能","weekText":"3-16,18-19周","klass":"物联NZ251(30人)","room":"教学B楼-B101","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":3,"period":3},{"course":"离散数学","code":"NZ31410105-01","teacher":"叶茜","weekText":"3-10周","klass":"物联NZ251(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":3,"period":4},{"course":"概率论与数理统计","code":"NZ31340104-01","teacher":"张婕","weekText":"3,5,7,9,11,13,15,19周","klass":"物联NZ251(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,19],"day":4,"period":1},{"course":"计算思维与算法实验","code":"NZ00159102-01","teacher":"Haipeng Li，姜颖","weekText":"2-5,7-12周","klass":"物联NZ251(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":4,"period":2},{"course":"学术英语沟通B","code":"GNZ16X3120-01","teacher":"Paul","weekText":"1-16周","klass":"物联NZ251(30人)","room":"教学B楼-B103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":4,"period":3},{"course":"计算机组成原理","code":"NZ31410106-01","teacher":"侯石柱","weekText":"3,5,7,9,11,13,15,19周","klass":"物联NZ251(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,19],"day":4,"period":4},{"course":"离散数学","code":"NZ31410105-01","teacher":"叶茜","weekText":"3-16,18-19周","klass":"物联NZ251(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":5,"period":1},{"course":"体育III","code":"NZ31360103-01","teacher":"体育课","weekText":"1-16周","klass":"物联NZ251(30人)","room":"教学C楼-S-E01","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":2}]},{"name":"物联NZ252","title":"2026-2027学年秋  班级课表","notes":["系统设计与开发2  (GNZ23C3110-02)  第17周  柴洪涛  无地点安排"],"entries":[{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ252(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"创业基础","code":"NZ11060204-01","teacher":"高金乔","weekText":"1-15周","klass":"物联NZ252(30人)","room":"教学B楼-B-211","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"day":1,"period":2},{"course":"马克思主义基本原理","code":"GNZ31A3130-01","teacher":"柳海燕","weekText":"1-16,18-19周","klass":"物联NZ252(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":1,"period":3},{"course":"学术英语沟通B","code":"GNZ16X3120-02","teacher":"Paul","weekText":"1-16周","klass":"物联NZ252(30人)","room":"教学B楼-B103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":1,"period":4},{"course":"学术英语写作C","code":"GNZ03A3120-02","teacher":"赵春能","weekText":"3-16,18-19周","klass":"物联NZ252(30人)","room":"教学B楼-B101","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":2,"period":1},{"course":"概率论与数理统计","code":"NZ31340104-01","teacher":"张婕","weekText":"3-16,18-19周","klass":"物联NZ252(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":2,"period":2},{"course":"计算机组成原理","code":"NZ31410106-01","teacher":"侯石柱","weekText":"3-16,18-19周","klass":"物联NZ252(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":2,"period":3},{"course":"创业基础","code":"NZ11060204-01","teacher":"高金乔","weekText":"13-15周","klass":"物联NZ252(30人)","room":"教学B楼-B-211","weeks":[13,14,15],"day":2,"period":5},{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ252(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":3,"period":1},{"course":"马克思主义基本原理","code":"GNZ31A3130-01","teacher":"柳海燕","weekText":"1-2周","klass":"物联NZ252(30人)","room":"教学B楼-B-110","weeks":[1,2],"day":3,"period":2},{"course":"学术英语阅读C","code":"GNZ06A3120-02","teacher":"姜亚珍","weekText":"3-16,18-19周","klass":"物联NZ252(30人)","room":"教学B楼-B-102","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":3,"period":3},{"course":"离散数学","code":"NZ31410105-01","teacher":"叶茜","weekText":"3-10周","klass":"物联NZ252(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":3,"period":4},{"course":"概率论与数理统计","code":"NZ31340104-01","teacher":"张婕","weekText":"3,5,7,9,11,13,15,19周","klass":"物联NZ252(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,19],"day":4,"period":1},{"course":"计算思维与算法实验","code":"NZ00159102-01","teacher":"Haipeng Li，姜颖","weekText":"2-5,7-12周","klass":"物联NZ252(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":4,"period":2},{"course":"学术英语拓展B","code":"GNZ17X3120-02","teacher":"时维娜","weekText":"1-16周","klass":"物联NZ252(30人)","room":"教学C楼-C2-103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":4,"period":3},{"course":"计算机组成原理","code":"NZ31410106-01","teacher":"侯石柱","weekText":"3,5,7,9,11,13,15,19周","klass":"物联NZ252(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,19],"day":4,"period":4},{"course":"离散数学","code":"NZ31410105-01","teacher":"叶茜","weekText":"3-16,18-19周","klass":"物联NZ252(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,18,19],"day":5,"period":1},{"course":"体育III","code":"NZ31360103-01","teacher":"体育课","weekText":"1-16周","klass":"物联NZ252(30人)","room":"教学C楼-S-E01","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":2}]},{"name":"物联NZ253","title":"2026-2027学年秋  班级课表","notes":["系统设计与开发2  (GNZ23C3110-03)  第17周  安亚军  无地点安排"],"entries":[{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ253(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"计算机组成原理","code":"NZ31410106-02","teacher":"韩雪","weekText":"3-17,19周","klass":"物联NZ253(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":1,"period":2},{"course":"概率论与数理统计","code":"NZ31340104-02","teacher":"张婕","weekText":"3-17,19周","klass":"物联NZ253(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":1,"period":3},{"course":"学术英语写作C","code":"GNZ03A3120-03","teacher":"赵春能","weekText":"3-17,19周","klass":"物联NZ253(30人)","room":"教学B楼-B101","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":1,"period":4},{"course":"创业基础","code":"NZ11060204-02","teacher":"高金乔","weekText":"1-15周","klass":"物联NZ253(30人)","room":"教学B楼-B-211","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"day":2,"period":1},{"course":"离散数学","code":"NZ31410105-02","teacher":"叶茜","weekText":"3-17,19周","klass":"物联NZ253(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":2,"period":2},{"course":"学术英语阅读C","code":"GNZ06A3120-03","teacher":"姜亚珍","weekText":"3-17,19周","klass":"物联NZ253(30人)","room":"教学B楼-B-102","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":2,"period":4},{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ253(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":3,"period":1},{"course":"概率论与数理统计","code":"NZ31340104-02","teacher":"张婕","weekText":"3-18周单周","klass":"物联NZ253(30人)","room":"教学B楼-B-204","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":2},{"course":"马克思主义基本原理","code":"GNZ31A3130-02","teacher":"柳海燕","weekText":"1-17,19周","klass":"物联NZ253(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":3,"period":3},{"course":"计算机组成原理","code":"NZ31410106-02","teacher":"韩雪","weekText":"3-18周单周","klass":"物联NZ253(30人)","room":"教学B楼-B-201","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":4},{"course":"创业基础","code":"NZ11060204-02","teacher":"高金乔","weekText":"13-15周","klass":"物联NZ253(30人)","room":"教学B楼-B-211","weeks":[13,14,15],"day":3,"period":5},{"course":"马克思主义基本原理","code":"GNZ31A3130-02","teacher":"柳海燕","weekText":"1-2周","klass":"物联NZ253(30人)","room":"教学B楼-B-110","weeks":[1,2],"day":4,"period":1},{"course":"离散数学","code":"NZ31410105-02","teacher":"叶茜","weekText":"3-10周","klass":"物联NZ253(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":1},{"course":"学术英语拓展B","code":"GNZ17X3120-03","teacher":"时维娜","weekText":"1-16周","klass":"物联NZ253(30人)","room":"教学C楼-C2-103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":4,"period":2},{"course":"计算思维与算法实验","code":"NZ00159102-02","teacher":"Haipeng Li，刘佳","weekText":"2-5,7-12周","klass":"物联NZ253(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":4,"period":3},{"course":"学术英语沟通B","code":"GNZ16X3120-03","teacher":"Paul","weekText":"1-16周","klass":"物联NZ253(30人)","room":"教学B楼-B103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":1},{"course":"体育III","code":"NZ31360103-01","teacher":"体育课","weekText":"1-16周","klass":"物联NZ253(30人)","room":"教学C楼-S-E01","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":2}]},{"name":"物联NZ254","title":"2026-2027学年秋  班级课表","notes":["系统设计与开发2  (GNZ23C3110-04)  第17周  胡和智  无地点安排"],"entries":[{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ254(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":1},{"course":"计算机组成原理","code":"NZ31410106-02","teacher":"韩雪","weekText":"3-17,19周","klass":"物联NZ254(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":1,"period":2},{"course":"概率论与数理统计","code":"NZ31340104-02","teacher":"张婕","weekText":"3-17,19周","klass":"物联NZ254(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":1,"period":3},{"course":"学术英语阅读C","code":"GNZ06A3120-04","teacher":"姜亚珍","weekText":"3-17,19周","klass":"物联NZ254(30人)","room":"教学B楼-B-102","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":1,"period":4},{"course":"创业基础","code":"NZ11060204-02","teacher":"高金乔","weekText":"1-15周","klass":"物联NZ254(30人)","room":"教学B楼-B-211","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"day":2,"period":1},{"course":"离散数学","code":"NZ31410105-02","teacher":"叶茜","weekText":"3-17,19周","klass":"物联NZ254(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":2,"period":2},{"course":"学术英语写作C","code":"GNZ03A3120-04","teacher":"赵春能","weekText":"3-17,19周","klass":"物联NZ254(30人)","room":"教学B楼-B101","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":2,"period":4},{"course":"计算思维与算法","code":"NZ31159102-01","teacher":"Fabiana，刘佳，Xiaofan Chen，姜颖","weekText":"1-5,7-13周","klass":"物联NZ254(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":3,"period":1},{"course":"概率论与数理统计","code":"NZ31340104-02","teacher":"张婕","weekText":"3-18周单周","klass":"物联NZ254(30人)","room":"教学B楼-B-204","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":2},{"course":"马克思主义基本原理","code":"GNZ31A3130-02","teacher":"柳海燕","weekText":"1-17,19周","klass":"物联NZ254(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,19],"day":3,"period":3},{"course":"计算机组成原理","code":"NZ31410106-02","teacher":"韩雪","weekText":"3-18周单周","klass":"物联NZ254(30人)","room":"教学B楼-B-201","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":4},{"course":"创业基础","code":"NZ11060204-02","teacher":"高金乔","weekText":"13-15周","klass":"物联NZ254(30人)","room":"教学B楼-B-211","weeks":[13,14,15],"day":3,"period":5},{"course":"马克思主义基本原理","code":"GNZ31A3130-02","teacher":"柳海燕","weekText":"1-2周","klass":"物联NZ254(30人)","room":"教学B楼-B-110","weeks":[1,2],"day":4,"period":1},{"course":"离散数学","code":"NZ31410105-02","teacher":"叶茜","weekText":"3-10周","klass":"物联NZ254(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":1},{"course":"学术英语沟通B","code":"GNZ16X3120-04","teacher":"Paul","weekText":"1-16周","klass":"物联NZ254(30人)","room":"教学B楼-B103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":4,"period":2},{"course":"计算思维与算法实验","code":"NZ00159102-02","teacher":"Haipeng Li，刘佳","weekText":"2-5,7-12周","klass":"物联NZ254(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":4,"period":3},{"course":"学术英语拓展B","code":"GNZ17X3120-04","teacher":"时维娜","weekText":"1-16周","klass":"物联NZ254(30人)","room":"教学C楼-C2-103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":1},{"course":"体育III","code":"NZ31360103-01","teacher":"体育课","weekText":"1-16周","klass":"物联NZ254(30人)","room":"教学C楼-S-E01","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":2}]},{"name":"物联NZ255","title":"2026-2027学年秋  班级课表","notes":["系统设计与开发2  (GNZ23C3110-05)  第17周  郝海辉  无地点安排"],"entries":[{"course":"学术英语写作C","code":"GNZ03A3120-05","teacher":"赵春能","weekText":"3-18周","klass":"物联NZ255(30人)","room":"教学B楼-B103","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":1},{"course":"概率论与数理统计","code":"NZ31340104-03","teacher":"张婕","weekText":"3-18周","klass":"物联NZ255(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":2},{"course":"计算思维与算法","code":"NZ31159102-02","teacher":"Fabiana，Xiaofan Chen，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ255(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":3},{"course":"计算机组成原理","code":"NZ31410106-03","teacher":"李艳萍","weekText":"3-18周","klass":"物联NZ255(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"创业基础","code":"NZ11060204-03","teacher":"高金乔","weekText":"13-15周","klass":"物联NZ255(30人)","room":"教学B楼-B-211","weeks":[13,14,15],"day":1,"period":5},{"course":"离散数学","code":"NZ31410105-03","teacher":"叶茜","weekText":"3-18周","klass":"物联NZ255(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":1},{"course":"马克思主义基本原理","code":"GNZ31A3130-03","teacher":"柳海燕","weekText":"1-2周","klass":"物联NZ255(30人)","room":"教学B楼-B-110","weeks":[1,2],"day":2,"period":2},{"course":"学术英语阅读C","code":"GNZ06A3120-05","teacher":"姜亚珍","weekText":"3-18周","klass":"物联NZ255(30人)","room":"教学B楼-B-102","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":3},{"course":"概率论与数理统计","code":"NZ31340104-03","teacher":"张婕","weekText":"3-18周单周","klass":"物联NZ255(30人)","room":"教学B楼-B-204","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":1},{"course":"创业基础","code":"NZ11060204-03","teacher":"高金乔","weekText":"1-15周","klass":"物联NZ255(30人)","room":"教学B楼-B-211","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"day":3,"period":2},{"course":"计算思维与算法","code":"NZ31159102-02","teacher":"Fabiana，Xiaofan Chen，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ255(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":3,"period":3},{"course":"学术英语沟通B","code":"GNZ16X3120-05","teacher":"Paul","weekText":"1-16周","klass":"物联NZ255(30人)","room":"教学B楼-B103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":3,"period":4},{"course":"学术英语拓展B","code":"GNZ17X3120-05","teacher":"时维娜","weekText":"1-16周","klass":"物联NZ255(30人)","room":"教学C楼-C2-103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":4,"period":1},{"course":"离散数学","code":"NZ31410105-03","teacher":"叶茜","weekText":"3-10周","klass":"物联NZ255(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":2},{"course":"计算机组成原理","code":"NZ31410106-03","teacher":"李艳萍","weekText":"3-18周单周","klass":"物联NZ255(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,17],"day":4,"period":3},{"course":"计算思维与算法实验","code":"NZ00159102-03","teacher":"Haipeng Li，李艳萍","weekText":"2-5,7-12周","klass":"物联NZ255(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":4,"period":4},{"course":"马克思主义基本原理","code":"GNZ31A3130-03","teacher":"柳海燕","weekText":"1-18周","klass":"物联NZ255(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":5,"period":1},{"course":"体育III","code":"NZ31360103-01","teacher":"体育课","weekText":"1-16周","klass":"物联NZ255(30人)","room":"教学C楼-S-E01","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":2}]},{"name":"物联NZ256","title":"2026-2027学年秋  班级课表","notes":["系统设计与开发2  (GNZ23C3110-06)  第17周  叶茜  无地点安排"],"entries":[{"course":"学术英语阅读C","code":"GNZ06A3120-06","teacher":"姜亚珍","weekText":"3-18周","klass":"物联NZ256(30人)","room":"教学B楼-B-102","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":1},{"course":"概率论与数理统计","code":"NZ31340104-03","teacher":"张婕","weekText":"3-18周","klass":"物联NZ256(30人)","room":"教学B楼-B-203","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":2},{"course":"计算思维与算法","code":"NZ31159102-02","teacher":"Fabiana，Xiaofan Chen，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ256(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":1,"period":3},{"course":"计算机组成原理","code":"NZ31410106-03","teacher":"李艳萍","weekText":"3-18周","klass":"物联NZ256(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"创业基础","code":"NZ11060204-03","teacher":"高金乔","weekText":"13-15周","klass":"物联NZ256(30人)","room":"教学B楼-B-211","weeks":[13,14,15],"day":1,"period":5},{"course":"离散数学","code":"NZ31410105-03","teacher":"叶茜","weekText":"3-18周","klass":"物联NZ256(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":1},{"course":"马克思主义基本原理","code":"GNZ31A3130-03","teacher":"柳海燕","weekText":"1-2周","klass":"物联NZ256(30人)","room":"教学B楼-B-110","weeks":[1,2],"day":2,"period":2},{"course":"学术英语写作C","code":"GNZ03A3120-06","teacher":"赵春能","weekText":"3-18周","klass":"物联NZ256(30人)","room":"教学B楼-B101","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":3},{"course":"概率论与数理统计","code":"NZ31340104-03","teacher":"张婕","weekText":"3-18周单周","klass":"物联NZ256(30人)","room":"教学B楼-B-204","weeks":[3,5,7,9,11,13,15,17],"day":3,"period":1},{"course":"创业基础","code":"NZ11060204-03","teacher":"高金乔","weekText":"1-15周","klass":"物联NZ256(30人)","room":"教学B楼-B-211","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15],"day":3,"period":2},{"course":"计算思维与算法","code":"NZ31159102-02","teacher":"Fabiana，Xiaofan Chen，李艳萍","weekText":"1-5,7-13周","klass":"物联NZ256(30人)","room":"教学B楼-B-302","weeks":[1,2,3,4,5,7,8,9,10,11,12,13],"day":3,"period":3},{"course":"学术英语拓展B","code":"GNZ17X3120-06","teacher":"时维娜","weekText":"1-16周","klass":"物联NZ256(30人)","room":"教学C楼-C2-103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":3,"period":4},{"course":"学术英语沟通B","code":"GNZ16X3120-06","teacher":"Paul","weekText":"1-16周","klass":"物联NZ256(30人)","room":"教学B楼-B103","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":4,"period":1},{"course":"离散数学","code":"NZ31410105-03","teacher":"叶茜","weekText":"3-10周","klass":"物联NZ256(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":2},{"course":"计算机组成原理","code":"NZ31410106-03","teacher":"李艳萍","weekText":"3-18周单周","klass":"物联NZ256(30人)","room":"教学B楼-B-203","weeks":[3,5,7,9,11,13,15,17],"day":4,"period":3},{"course":"计算思维与算法实验","code":"NZ00159102-03","teacher":"Haipeng Li，李艳萍","weekText":"2-5,7-12周","klass":"物联NZ256(30人)","room":"教学C楼-C2-201","weeks":[2,3,4,5,7,8,9,10,11,12],"day":4,"period":4},{"course":"马克思主义基本原理","code":"GNZ31A3130-03","teacher":"柳海燕","weekText":"1-18周","klass":"物联NZ256(30人)","room":"教学B楼-B-110","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":5,"period":1},{"course":"体育III","code":"NZ31360103-01","teacher":"体育课","weekText":"1-16周","klass":"物联NZ256(30人)","room":"教学C楼-S-E01","weeks":[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16],"day":5,"period":2}]},{"name":"物联NZ261","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排","艺术散步  (NZ22060301-01)  3-18周  张国勇  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排"],"entries":[{"course":"C语言程序设计","code":"NZ31410103-01","teacher":"于东敏","weekText":"3-5,7-19周","klass":"物联NZ261(30人)","room":"教学C楼-C2-201","weeks":[3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"高等数学IA","code":"NZ31340101-03","teacher":"张瑾","weekText":"3-19周","klass":"物联NZ261(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"国际交流与沟通","code":"GNZ32X3120-05","teacher":"Francesco","weekText":"3-18周","klass":"物联NZ261(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-03","teacher":"陈萍","weekText":"3-19周","klass":"物联NZ261(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":4},{"course":"大学生职业发展与就业指导A","code":"NZ11060202-01","teacher":"胡和智","weekText":"3-11周","klass":"物联NZ261(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":1},{"course":"物联网工程专业导论课","code":"NZ31410102-01","teacher":"刘明","weekText":"3-10周","klass":"物联NZ261(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":2},{"course":"心理健康教育A","code":"NZ11060211-02","teacher":"段放","weekText":"3-11周","klass":"物联NZ261(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":3},{"course":"学术英语综合A","code":"GNZ13A3130-05","teacher":"白秀峰","weekText":"4-19周","klass":"物联NZ261(30人)","room":"教学B楼-B-203","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":2,"period":4},{"course":"思想道德与法治","code":"GNZ313A3130-03","teacher":"陈萍","weekText":"3-8周单周","klass":"物联NZ261(30人)","room":"教学B楼-B-210","weeks":[3,5,7],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-03","teacher":"张瑾","weekText":"3-19周","klass":"物联NZ261(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"英语视听","code":"GNZ31X3120-05","teacher":"张素凤","weekText":"3-18周","klass":"物联NZ261(30人)","room":"教学C楼-C2-105","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":3,"period":3},{"course":"C语言程序设计","code":"NZ31410103-01","teacher":"于东敏","weekText":"4-5,7-12周","klass":"物联NZ261(30人)","room":"教学C楼-C2-201","weeks":[4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-05","teacher":"李锋凯","weekText":"3-18周双周","klass":"物联NZ261(30人)","room":"教学B楼-B-102","weeks":[4,6,8,10,12,14,16,18],"day":4,"period":1},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"物联NZ261(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"习近平总书记关于科技创新的重要论述","code":"NZ31410101-01","teacher":"胡金明","weekText":"3-10周","klass":"物联NZ261(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":3},{"course":"C语言程序设计实验","code":"NZ31410203-01","teacher":"于东敏","weekText":"4,6-19周","klass":"物联NZ261(30人)","room":"教学C楼-C2-303","weeks":[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-03","teacher":"张瑾","weekText":"3-12周","klass":"物联NZ261(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"物联NZ262","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","艺术散步  (NZ22060301-01)  3-18周  张国勇  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排"],"entries":[{"course":"C语言程序设计","code":"NZ31410103-01","teacher":"于东敏","weekText":"3-5,7-19周","klass":"物联NZ262(30人)","room":"教学C楼-C2-201","weeks":[3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"高等数学IA","code":"NZ31340101-03","teacher":"张瑾","weekText":"3-19周","klass":"物联NZ262(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"学术英语综合A","code":"GNZ13A3130-06","teacher":"白秀峰","weekText":"4-19周","klass":"物联NZ262(30人)","room":"教学B楼-B103","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-03","teacher":"陈萍","weekText":"3-19周","klass":"物联NZ262(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":4},{"course":"大学生职业发展与就业指导A","code":"NZ11060202-01","teacher":"胡和智","weekText":"3-11周","klass":"物联NZ262(30人)","room":"教学B楼-B-110","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":1},{"course":"物联网工程专业导论课","code":"NZ31410102-01","teacher":"刘明","weekText":"3-10周","klass":"物联NZ262(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":2},{"course":"心理健康教育A","code":"NZ11060211-02","teacher":"段放","weekText":"3-11周","klass":"物联NZ262(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":3},{"course":"英语视听","code":"GNZ31X3120-06","teacher":"张素凤","weekText":"3-18周","klass":"物联NZ262(30人)","room":"教学C楼-C2-105","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":4},{"course":"思想道德与法治","code":"GNZ313A3130-03","teacher":"陈萍","weekText":"3-8周单周","klass":"物联NZ262(30人)","room":"教学B楼-B-210","weeks":[3,5,7],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-03","teacher":"张瑾","weekText":"3-19周","klass":"物联NZ262(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"国际交流与沟通","code":"GNZ32X3120-06","teacher":"Francesco","weekText":"3-18周","klass":"物联NZ262(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":3,"period":3},{"course":"C语言程序设计","code":"NZ31410103-01","teacher":"于东敏","weekText":"4-5,7-12周","klass":"物联NZ262(30人)","room":"教学C楼-C2-201","weeks":[4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"物联NZ262(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"习近平总书记关于科技创新的重要论述","code":"NZ31410101-01","teacher":"胡金明","weekText":"3-10周","klass":"物联NZ262(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":4,"period":3},{"course":"学术英语综合A","code":"GNZ13A3130-06","teacher":"李锋凯","weekText":"3-18周双周","klass":"物联NZ262(30人)","room":"教学B楼-B-102","weeks":[4,6,8,10,12,14,16,18],"day":4,"period":4},{"course":"C语言程序设计实验","code":"NZ31410203-01","teacher":"于东敏","weekText":"4,6-19周","klass":"物联NZ262(30人)","room":"教学C楼-C2-303","weeks":[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-03","teacher":"张瑾","weekText":"3-12周","klass":"物联NZ262(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"物联NZ263","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","艺术散步  (NZ22060301-01)  3-18周  张国勇  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排"],"entries":[{"course":"高等数学IA","code":"NZ31340101-04","teacher":"窦志红","weekText":"3-19周","klass":"物联NZ263(30人)","room":"教学B楼-B-304","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"C语言程序设计","code":"NZ31410103-02","teacher":"姜颖","weekText":"3-5,7-19周","klass":"物联NZ263(30人)","room":"教学C楼-C2-301","weeks":[3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-04","teacher":"陈萍","weekText":"3-19周","klass":"物联NZ263(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":3},{"course":"英语视听","code":"GNZ31X3120-07","teacher":"张素凤","weekText":"3-18周","klass":"物联NZ263(30人)","room":"教学C楼-C2-105","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-07","teacher":"白秀峰","weekText":"4-19周","klass":"物联NZ263(30人)","room":"教学B楼-B103","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":2,"period":1},{"course":"大学生职业发展与就业指导A","code":"NZ11060202-02","teacher":"刘建林","weekText":"3-11周","klass":"物联NZ263(30人)","room":"教学B楼-B-211","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":2},{"course":"物联网工程专业导论课","code":"NZ31410102-02","teacher":"刘明","weekText":"3-10周","klass":"物联NZ263(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":3},{"course":"习近平总书记关于科技创新的重要论述","code":"NZ31410101-02","teacher":"张国勇","weekText":"3-10周","klass":"物联NZ263(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":4},{"course":"国际交流与沟通","code":"GNZ32X3120-07","teacher":"Francesco","weekText":"3-18周","klass":"物联NZ263(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-04","teacher":"窦志红","weekText":"3-19周","klass":"物联NZ263(30人)","room":"教学B楼-B-304","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"心理健康教育A","code":"NZ11060211-03","teacher":"段放","weekText":"3-11周","klass":"物联NZ263(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":3,"period":3},{"course":"C语言程序设计","code":"NZ31410103-02","teacher":"姜颖","weekText":"4-5,7-12周","klass":"物联NZ263(30人)","room":"教学C楼-C2-303","weeks":[4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-07","teacher":"李锋凯","weekText":"5-20周单周","klass":"物联NZ263(30人)","room":"教学B楼-B-102","weeks":[5,7,9,11,13,15,17,19],"day":4,"period":1},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"物联NZ263(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-04","teacher":"陈萍","weekText":"3-8周单周","klass":"物联NZ263(30人)","room":"教学B楼-B-210","weeks":[3,5,7],"day":4,"period":3},{"course":"C语言程序设计实验","code":"NZ31410203-02","teacher":"姜颖","weekText":"4,6-19周","klass":"物联NZ263(30人)","room":"教学C楼-C2-305","weeks":[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-04","teacher":"窦志红","weekText":"3-12周","klass":"物联NZ263(30人)","room":"教学B楼-B-304","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"物联NZ264","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","艺术散步  (NZ22060301-01)  3-18周  张国勇  无地点安排"],"entries":[{"course":"高等数学IA","code":"NZ31340101-04","teacher":"窦志红","weekText":"3-19周","klass":"物联NZ264(30人)","room":"教学B楼-B-304","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"C语言程序设计","code":"NZ31410103-02","teacher":"姜颖","weekText":"3-5,7-19周","klass":"物联NZ264(30人)","room":"教学C楼-C2-301","weeks":[3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-04","teacher":"陈萍","weekText":"3-19周","klass":"物联NZ264(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":3},{"course":"国际交流与沟通","code":"GNZ32X3120-08","teacher":"Francesco","weekText":"3-18周","klass":"物联NZ264(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":1,"period":4},{"course":"英语视听","code":"GNZ31X3120-08","teacher":"张素凤","weekText":"3-18周","klass":"物联NZ264(30人)","room":"教学C楼-C2-105","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":1},{"course":"大学生职业发展与就业指导A","code":"NZ11060202-02","teacher":"刘建林","weekText":"3-11周","klass":"物联NZ264(30人)","room":"教学B楼-B-211","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":2},{"course":"物联网工程专业导论课","code":"NZ31410102-02","teacher":"刘明","weekText":"3-10周","klass":"物联NZ264(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":3},{"course":"习近平总书记关于科技创新的重要论述","code":"NZ31410101-02","teacher":"张国勇","weekText":"3-10周","klass":"物联NZ264(30人)","room":"教学B楼-B-201","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-08","teacher":"白秀峰","weekText":"4-19周","klass":"物联NZ264(30人)","room":"教学B楼-B103","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-04","teacher":"窦志红","weekText":"3-19周","klass":"物联NZ264(30人)","room":"教学B楼-B-304","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"心理健康教育A","code":"NZ11060211-03","teacher":"段放","weekText":"3-11周","klass":"物联NZ264(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":3,"period":3},{"course":"C语言程序设计","code":"NZ31410103-02","teacher":"姜颖","weekText":"4-5,7-12周","klass":"物联NZ264(30人)","room":"教学C楼-C2-303","weeks":[4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"物联NZ264(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-04","teacher":"陈萍","weekText":"3-8周单周","klass":"物联NZ264(30人)","room":"教学B楼-B-210","weeks":[3,5,7],"day":4,"period":3},{"course":"学术英语综合A","code":"GNZ13A3130-08","teacher":"李锋凯","weekText":"5-20周单周","klass":"物联NZ264(30人)","room":"教学B楼-B-102","weeks":[5,7,9,11,13,15,17,19],"day":4,"period":4},{"course":"C语言程序设计实验","code":"NZ31410203-02","teacher":"姜颖","weekText":"4,6-19周","klass":"物联NZ264(30人)","room":"教学C楼-C2-305","weeks":[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-04","teacher":"窦志红","weekText":"3-12周","klass":"物联NZ264(30人)","room":"教学B楼-B-304","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"物联NZ265","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","艺术散步  (NZ22060301-01)  3-18周  张国勇  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排"],"entries":[{"course":"C语言程序设计","code":"NZ31410103-03","teacher":"于丽梅","weekText":"3-5,7-19周","klass":"物联NZ265(30人)","room":"教学C楼-C2-306","weeks":[3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"高等数学IA","code":"NZ31340101-05","teacher":"刘月","weekText":"3-19周","klass":"物联NZ265(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"学术英语综合A","code":"GNZ13A3130-09","teacher":"陆洋","weekText":"4-19周","klass":"物联NZ265(30人)","room":"教学B楼-B-102","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":3},{"course":"大学生职业发展与就业指导A","code":"NZ11060202-03","teacher":"刘建林","weekText":"3-11周","klass":"物联NZ265(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":1},{"course":"习近平总书记关于科技创新的重要论述","code":"NZ31410101-03","teacher":"张艳红","weekText":"3-10周","klass":"物联NZ265(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":2},{"course":"英语视听","code":"GNZ31X3120-09","teacher":"张素凤","weekText":"3-18周","klass":"物联NZ265(30人)","room":"教学C楼-C2-105","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":3},{"course":"物联网工程专业导论课","code":"NZ31410102-03","teacher":"刘明","weekText":"3-10周","klass":"物联NZ265(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":4},{"course":"高等数学IA","code":"NZ31340101-05","teacher":"刘月","weekText":"3-19周","klass":"物联NZ265(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-05","teacher":"陈萍","weekText":"3-19周","klass":"物联NZ265(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":3},{"course":"C语言程序设计","code":"NZ31410103-03","teacher":"于丽梅","weekText":"4-5,7-12周","klass":"物联NZ265(30人)","room":"教学C楼-C2-306","weeks":[4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-09","teacher":"陆洋","weekText":"5-20周单周","klass":"物联NZ265(30人)","room":"教学B楼-B-102","weeks":[5,7,9,11,13,15,17,19],"day":3,"period":5},{"course":"国际交流与沟通","code":"GNZ32X3120-09","teacher":"Francesco","weekText":"3-18周","klass":"物联NZ265(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":4,"period":1},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"物联NZ265(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"心理健康教育A","code":"NZ11060211-04","teacher":"段放","weekText":"3-11周","klass":"物联NZ265(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":4,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-05","teacher":"陈萍","weekText":"3-8周单周","klass":"物联NZ265(30人)","room":"教学B楼-B-210","weeks":[3,5,7],"day":4,"period":4},{"course":"C语言程序设计实验","code":"NZ31410203-03","teacher":"于丽梅","weekText":"4,6-19周","klass":"物联NZ265(30人)","room":"教学C楼-C2-306","weeks":[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-05","teacher":"刘月","weekText":"3-12周","klass":"物联NZ265(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]},{"name":"物联NZ266","title":"2026-2027学年秋  班级课表","notes":["军事技能训练  (NZ130CP104-01)  1-2周  李默凡  无地点安排","军事理论  (NZ11060105-01)  3-18周  张皓健  无地点安排","当代大学生国家安全教育  (NZ11060116-01)  3-18周  律晶晶  无地点安排","劳动通论  (NZ11060111-01)  3-18周  尤丽佳  无地点安排","艺术散步  (NZ22060301-01)  3-18周  张国勇  无地点安排"],"entries":[{"course":"C语言程序设计","code":"NZ31410103-03","teacher":"于丽梅","weekText":"3-5,7-19周","klass":"物联NZ266(30人)","room":"教学C楼-C2-306","weeks":[3,4,5,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":1},{"course":"高等数学IA","code":"NZ31340101-05","teacher":"刘月","weekText":"3-19周","klass":"物联NZ266(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":2},{"course":"学术英语综合A","code":"GNZ13A3130-10","teacher":"陆洋","weekText":"4-19周","klass":"物联NZ266(30人)","room":"教学B楼-B-208","weeks":[4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":1,"period":4},{"course":"大学生职业发展与就业指导A","code":"NZ11060202-03","teacher":"刘建林","weekText":"3-11周","klass":"物联NZ266(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10,11],"day":2,"period":1},{"course":"习近平总书记关于科技创新的重要论述","code":"NZ31410101-03","teacher":"张艳红","weekText":"3-10周","klass":"物联NZ266(30人)","room":"教学B楼-B-301","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":2},{"course":"国际交流与沟通","code":"GNZ32X3120-10","teacher":"Francesco","weekText":"3-18周","klass":"物联NZ266(30人)","room":"教学B楼-B-303","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":2,"period":3},{"course":"物联网工程专业导论课","code":"NZ31410102-03","teacher":"刘明","weekText":"3-10周","klass":"物联NZ266(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10],"day":2,"period":4},{"course":"英语视听","code":"GNZ31X3120-10","teacher":"张素凤","weekText":"3-18周","klass":"物联NZ266(30人)","room":"教学C楼-C2-105","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18],"day":3,"period":1},{"course":"高等数学IA","code":"NZ31340101-05","teacher":"刘月","weekText":"3-19周","klass":"物联NZ266(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":2},{"course":"思想道德与法治","code":"GNZ313A3130-05","teacher":"陈萍","weekText":"3-19周","klass":"物联NZ266(30人)","room":"教学B楼-B-210","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":3,"period":3},{"course":"C语言程序设计","code":"NZ31410103-03","teacher":"于丽梅","weekText":"4-5,7-12周","klass":"物联NZ266(30人)","room":"教学C楼-C2-306","weeks":[4,5,7,8,9,10,11,12],"day":3,"period":4},{"course":"学术英语综合A","code":"GNZ13A3130-10","teacher":"陆洋","weekText":"3-18周双周","klass":"物联NZ266(30人)","room":"教学B楼-B-102","weeks":[4,6,8,10,12,14,16,18],"day":3,"period":5},{"course":"体育I","code":"NZ31360101-01","teacher":"体育课","weekText":"3-19周","klass":"物联NZ266(30人)","room":"教学C楼-S-E01","weeks":[3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":4,"period":2},{"course":"心理健康教育A","code":"NZ11060211-04","teacher":"段放","weekText":"3-11周","klass":"物联NZ266(30人)","room":"教学B楼-B-204","weeks":[3,4,5,6,7,8,9,10,11],"day":4,"period":3},{"course":"思想道德与法治","code":"GNZ313A3130-05","teacher":"陈萍","weekText":"3-8周单周","klass":"物联NZ266(30人)","room":"教学B楼-B-210","weeks":[3,5,7],"day":4,"period":4},{"course":"C语言程序设计实验","code":"NZ31410203-03","teacher":"于丽梅","weekText":"4,6-19周","klass":"物联NZ266(30人)","room":"教学C楼-C2-306","weeks":[4,6,7,8,9,10,11,12,13,14,15,16,17,18,19],"day":5,"period":1},{"course":"高等数学IA","code":"NZ31340101-05","teacher":"刘月","weekText":"3-12周","klass":"物联NZ266(30人)","room":"教学B楼-B-208","weeks":[3,4,5,6,7,8,9,10,11,12],"day":5,"period":2}]}]};
+/*!
+ * TimeTable clone — src/app.js
+ * 像素级复刻版：DOM / 类名 / 文本 / 交互与原始单文件产物一致（见 rebuild/docs/logic-spec.md）。
+ * 名单功能按数据自动开关：数据含 people（内部完整数据）时显示名单/学生相关 UI，
+ * 公开数据不含 people 时自动隐藏——因此同一份代码可同时构建公开版与内部部署版。
+ * 数据由构建注入 window.__TT_DATA__（rebuild/src/data.raw.json）。
+ */
+(function () {
+  'use strict';
+
+  var Q = window.__TT_DATA__;
+  var ENHANCED = true; // 公开版本始终启用：无障碍 / 动态标题 / hash 同步 / 输入法安全
+  var HAS_PEOPLE = Array.isArray(Q.people) && Q.people.length > 0;
+  var SEARCH_PLACEHOLDER = HAS_PEOPLE
+    ? '搜索课程、班级、教室或学生姓名 / 学号'
+    : '搜索课程、班级、教师或教室';
+
+  /* ------------------------------------------------------------------ *
+   * 常量（逻辑规格 §3）
+   * ------------------------------------------------------------------ */
+  var WEEKDAY_FULL = ['星期一', '星期二', '星期三', '星期四', '星期五', '星期六', '星期日'];
+  var WEEKDAY_CHAR = '一二三四五六日';
+  var PERIOD_CHAR = '一二三四五';
+  var COLORS = ['c0', 'c1', 'c2', 'c3', 'c4', 'c5', 'c6'];
+  var PICK_TITLES = { class: '选择班级', teacher: '选择教师', room: '选择教室' };
+  var TYPE_LABELS = { course: '课程', class: '班级', person: '学生', teacher: '教师', room: '教室' };
+  var TYPE_RANK = { class: 0, person: 1, room: 2, course: 3, teacher: 4 };
+  var SEMESTER_START = new Date(2026, 7, 31);
+  var WEEK_MS = 6048e5;
+  var MAX_WEEK = 20;
+  var ANCHOR = '<!---->';
+
+  var ICON_PATHS = {
+    check: '<path d="M3.3 8.7 6.4 11.8 12.8 4.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+    person: '<circle cx="8" cy="5.6" r="2.4" stroke="currentColor" stroke-width="1.5"/><path d="M3.5 13.1c0-2.2 2-3.5 4.5-3.5s4.5 1.3 4.5 3.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
+    class: '<path d="M2.6 6.6 8 3.9l5.4 2.7L8 9.3 2.6 6.6Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5.1 8.1v3.2c0 .9 1.3 1.6 2.9 1.6s2.9-.7 2.9-1.6V8.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
+    course: '<path d="M8 4.7C6.7 3.8 4.9 3.4 2.9 3.4v8.1c2 0 3.8.4 5.1 1.3 1.3-.9 3.1-1.3 5.1-1.3V3.4c-2 0-3.8.4-5.1 1.3Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M8 4.7v8.1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
+    teacher: '<rect x="2.6" y="3.4" width="10.8" height="7.2" rx="1.3" stroke="currentColor" stroke-width="1.5"/><path d="M5.6 13.2h4.8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>',
+    room: '<path d="M8 14.1s4.1-4.3 4.1-7.2A4.1 4.1 0 0 0 3.9 6.9c0 2.9 4.1 7.2 4.1 7.2Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="8" cy="6.9" r="1.5" stroke="currentColor" stroke-width="1.5"/>',
+    close: '<path d="M4.7 4.7 11.3 11.3M11.3 4.7 4.7 11.3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>',
+    search: '<circle cx="7" cy="7" r="4.4" stroke="currentColor" stroke-width="1.7"/><path d="M10.3 10.3 14 14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>',
+    prev: '<path d="M9.9 3.4 5.3 8l4.6 4.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>',
+    next: '<path d="M6.1 3.4 10.7 8l-4.6 4.6" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>'
+  };
+
+  function ico(name) {
+    return '<svg class="ico" viewBox="0 0 16 16" fill="none" aria-hidden="true">' + ICON_PATHS[name] + '</svg>';
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 纯函数 / 派生数据（§15）
+   * ------------------------------------------------------------------ */
+  function splitTeachers(entry) {
+    return String(entry.teacher || '')
+      .split(/[、,，]/)
+      .map(function (s) { return s.trim(); })
+      .filter(Boolean);
+  }
+
+  function colorClass(course) {
+    var h = 0;
+    for (var i = 0; i < course.length; i++) h = (h * 31 + course.charCodeAt(i)) >>> 0;
+    return COLORS[h % COLORS.length];
+  }
+
+  function currentWeek() {
+    var diff = Date.now() - SEMESTER_START.getTime();
+    if (diff < 0) return 1;
+    return Math.min(MAX_WEEK, Math.max(1, Math.floor(diff / WEEK_MS) + 1));
+  }
+
+  function clamp(n, lo, hi) {
+    return Math.max(lo, Math.min(hi, n));
+  }
+
+  var peopleCountByClass = HAS_PEOPLE ? Q.people.reduce(function (acc, p) {
+    acc[p.klass] = (acc[p.klass] || 0) + 1;
+    return acc;
+  }, {}) : {};
+
+  function teacherDirectory() {
+    var map = new Map();
+    for (var i = 0; i < Q.classes.length; i++) {
+      var entries = Q.classes[i].entries;
+      for (var j = 0; j < entries.length; j++) {
+        var e = entries[j];
+        var list = splitTeachers(e);
+        for (var k = 0; k < list.length; k++) {
+          var t = list[k];
+          if (!t || t === '体育课') continue;
+          if (!map.has(t)) map.set(t, new Set());
+          map.get(t).add(e.day + '|' + e.period + '|' + [e.course, e.code, e.teacher, e.weekText].join('|'));
+        }
+      }
+    }
+    var out = [];
+    map.forEach(function (set, name) { out.push([name, set.size]); });
+    return out.sort(function (a, b) { return a[0].localeCompare(b[0], 'zh'); });
+  }
+
+  function roomDirectory() {
+    var map = new Map();
+    for (var i = 0; i < Q.classes.length; i++) {
+      var entries = Q.classes[i].entries;
+      for (var j = 0; j < entries.length; j++) {
+        var e = entries[j];
+        var r = String(e.room || '').trim();
+        if (!r || r === '无地点安排') continue;
+        if (!map.has(r)) map.set(r, new Set());
+        map.get(r).add(e.day + '|' + e.period + '|' + [e.course, e.code, e.teacher, e.weekText].join('|'));
+      }
+    }
+    var out = [];
+    map.forEach(function (set, name) { out.push([name, set.size]); });
+    return out.sort(function (a, b) { return a[0].localeCompare(b[0], 'zh'); });
+  }
+
+  var TEACHERS = teacherDirectory();
+  var ROOMS = roomDirectory();
+
+  function findDirectory(list, name) {
+    for (var i = 0; i < list.length; i++) if (list[i][0] === name) return list[i][1];
+    return 0;
+  }
+
+  /* 实体取条目（§15.5） */
+  function classEntries(name) {
+    if (!name) return [];
+    for (var i = 0; i < Q.classes.length; i++) {
+      if (Q.classes[i].name === name) return Q.classes[i].entries;
+    }
+    return [];
+  }
+
+  function weekFilter(entries, week) {
+    if (!week) return entries;
+    return entries.filter(function (e) { return !e.weeks.length || e.weeks.indexOf(week) !== -1; });
+  }
+
+  function classWeekEntries(name, week) {
+    return weekFilter(classEntries(name), week);
+  }
+
+  function teacherEntries(name, week) {
+    var out = [];
+    if (!name) return out;
+    for (var i = 0; i < Q.classes.length; i++) {
+      var c = Q.classes[i];
+      for (var j = 0; j < c.entries.length; j++) {
+        var e = c.entries[j];
+        if (splitTeachers(e).indexOf(name) === -1) continue;
+        if (week && e.weeks.length && e.weeks.indexOf(week) === -1) continue;
+        out.push(Object.assign({}, e, { clsName: c.name }));
+      }
+    }
+    return out;
+  }
+
+  function roomEntries(name, week) {
+    var out = [];
+    if (!name) return out;
+    var target = String(name).trim();
+    for (var i = 0; i < Q.classes.length; i++) {
+      var c = Q.classes[i];
+      for (var j = 0; j < c.entries.length; j++) {
+        var e = c.entries[j];
+        if (String(e.room || '').trim() !== target) continue;
+        if (week && e.weeks.length && e.weeks.indexOf(week) === -1) continue;
+        out.push(Object.assign({}, e, { clsName: c.name }));
+      }
+    }
+    return out;
+  }
+
+  function dedupe(list) {
+    var map = new Map();
+    for (var i = 0; i < list.length; i++) {
+      var e = list[i];
+      var key = [e.course, e.code, e.teacher, e.room, e.weekText].join('|');
+      if (!map.has(key)) map.set(key, Object.assign({}, e, { clsList: [] }));
+      var g = map.get(key);
+      if (e.clsName && g.clsList.indexOf(e.clsName) === -1) g.clsList.push(e.clsName);
+    }
+    return Array.from(map.values());
+  }
+
+  /* 搜索索引（§13.2） */
+  var searchIndex = (function () {
+    var list = [];
+    function push(o) { o.id = list.length; list.push(o); return o; }
+    Q.classes.forEach(function (c) {
+      push({ type: 'class', name: c.name, sub: c.entries.length + ' 节课', kw: c.name.toLowerCase() });
+    });
+    var courses = new Map();
+    Q.classes.forEach(function (c) {
+      c.entries.forEach(function (e) {
+        if (!courses.has(e.course)) {
+          courses.set(e.course, { type: 'course', name: e.course, sub: '', kw: e.course.toLowerCase() });
+        }
+      });
+    });
+    courses.forEach(function (o, course) {
+      var ts = new Set();
+      Q.classes.forEach(function (c) {
+        c.entries.forEach(function (e) {
+          if (e.course === course) splitTeachers(e).forEach(function (t) { ts.add(t); });
+        });
+      });
+      o.sub = Array.from(ts).slice(0, 3).join('、');
+      push(o);
+    });
+    if (HAS_PEOPLE) {
+      Q.people.forEach(function (p) {
+        push({
+          type: 'person', name: p.name, sub: p.klass + ' · ' + p.code,
+          kw: (p.name + ' ' + p.code).toLowerCase(), ref: p
+        });
+      });
+    }
+    TEACHERS.forEach(function (x) {
+      push({ type: 'teacher', name: x[0], sub: '教师 · ' + x[1] + ' 节课', kw: x[0].toLowerCase() });
+    });
+    ROOMS.forEach(function (x) {
+      push({ type: 'room', name: x[0], sub: '教室 · ' + x[1] + ' 节课', kw: x[0].toLowerCase() });
+    });
+    return list;
+  })();
+
+  function scoreSearch(raw) {
+    var q = String(raw).trim().toLowerCase();
+    if (!q) return [];
+    var out = [];
+    for (var i = 0; i < searchIndex.length; i++) {
+      var item = searchIndex[i];
+      var pos = item.kw.indexOf(q);
+      if (pos === -1) continue;
+      var score = 100 - pos;
+      var lower = item.name.toLowerCase();
+      if (lower === q) score += 100;
+      if (lower.indexOf(q) === 0) score += 40;
+      score -= TYPE_RANK[item.type] * 2;
+      out.push({ item: item, score: score });
+    }
+    out.sort(function (a, b) { return b.score - a.score; });
+    return out.slice(0, 12).map(function (x) { return x.item; });
+  }
+
+  /* 选择器索引（§11.2） */
+  var pickerIndex = {
+    class: Q.classes.map(function (c) { return { name: c.name, sub: c.entries.length + ' 节课' }; }),
+    teacher: TEACHERS.map(function (x) { return { name: x[0], sub: x[1] + ' 节课' }; }),
+    room: ROOMS.map(function (x) { return { name: x[0], sub: x[1] + ' 节课' }; })
+  };
+
+  /* ------------------------------------------------------------------ *
+   * 状态（§1）
+   * ------------------------------------------------------------------ */
+  var state = {
+    klass: null,
+    room: null,
+    teacher: null,
+    entity: 'class',
+    student: null,
+    mode: 'week',
+    week: 1,
+    view: 'tt',
+    anim: '',
+    dragging: false,
+    drag: 0,
+    picker: { open: false, query: '' },
+    modal: null,
+    search: { q: '', open: false, active: -1 },
+    dir: { mode: 'classes', klass: null }
+  };
+
+  var writingHash = false;
+
+  function current() {
+    return state.entity === 'teacher' ? state.teacher : state.entity === 'room' ? state.room : state.klass;
+  }
+
+  function pickLabel() {
+    var cur = current();
+    if (cur) return cur;
+    return PICK_TITLES[state.entity] + '…';
+  }
+
+  function entityEntriesAll() {
+    return state.entity === 'room' ? roomEntries(state.room, 0)
+      : state.entity === 'teacher' ? teacherEntries(state.teacher, 0)
+        : classEntries(state.klass);
+  }
+
+  function gridEntries() {
+    if (state.entity === 'room') return roomEntries(state.room, state.mode === 'week' ? state.week : 0);
+    if (state.entity === 'teacher') return teacherEntries(state.teacher, state.mode === 'week' ? state.week : 0);
+    if (state.mode === 'gantt') return classEntries(state.klass);
+    return classWeekEntries(state.klass, state.week);
+  }
+
+  function gridModel() {
+    var entries = gridEntries();
+    var byDay = {};
+    for (var i = 0; i < entries.length; i++) {
+      var e = entries[i];
+      if (!byDay[e.day]) byDay[e.day] = {};
+      byDay[e.day][e.period] = (byDay[e.day][e.period] || []).concat(e);
+    }
+    var days = [1, 2, 3, 4, 5];
+    if (entries.some(function (x) { return x.day >= 6; })) days.push(6, 7);
+    return {
+      days: days,
+      todayIdx: (new Date().getDay() + 6) % 7 + 1,
+      rows: Q.periods.map(function (p) {
+        return {
+          no: p.no,
+          time: p.time,
+          label: '第' + PERIOD_CHAR[p.no - 1] + '节',
+          cells: days.map(function (day) {
+            var raw = (byDay[day] && byDay[day][p.no]) || [];
+            return { day: day, items: raw.length ? dedupe(raw) : [] };
+          })
+        };
+      }),
+      isRoom: state.entity === 'room',
+      isTeacher: state.entity === 'teacher'
+    };
+  }
+
+  function gridTitleSub() {
+    if (state.entity === 'room') {
+      if (!state.room) return { title: '教室课表', sub: '点击上方选择一间教室' };
+      return {
+        title: state.room,
+        sub: '教室课表 · 共' + findDirectory(ROOMS, state.room) + '节' + (state.mode === 'week' ? ' · 第' + state.week + '周' : '')
+      };
+    }
+    if (state.entity === 'teacher') {
+      if (!state.teacher) return { title: '教师课表', sub: '点击上方选择一位教师' };
+      return {
+        title: state.teacher,
+        sub: '教师课表 · 共' + findDirectory(TEACHERS, state.teacher) + '节' + (state.mode === 'week' ? ' · 第' + state.week + '周' : '')
+      };
+    }
+    return {
+      title: state.klass,
+      sub: Q.title + (state.mode === 'week' ? ' · 第' + state.week + '周' : ' · 学期全部课程')
+    };
+  }
+
+  function weekDots() {
+    var all = entityEntriesAll();
+    var out = [];
+    for (var w = 1; w <= MAX_WEEK; w++) {
+      out.push({
+        w: w,
+        has: all.some(function (e) { return !e.weeks.length || e.weeks.indexOf(w) !== -1; }),
+        cur: w === state.week
+      });
+    }
+    return out;
+  }
+
+  function showStudentBanner() {
+    return state.entity === 'class' && !!state.student && state.student.klass === state.klass;
+  }
+
+  function dirClasses() {
+    return Q.classes.map(function (c) {
+      var n = peopleCountByClass[c.name] || 0;
+      return {
+        name: c.name,
+        sub: c.entries.length + ' 节课' + (n ? ' · ' + n + ' 名学生' : ''),
+        hasPeople: !!n
+      };
+    });
+  }
+
+  function dirPeople() {
+    return Q.people
+      .filter(function (p) { return p.klass === state.dir.klass; })
+      .map(function (p) { return { name: p.name, sub: '学号 ' + p.code, ref: p }; });
+  }
+
+  function modalCellItems(day, period) {
+    return dedupe(entityEntriesAll().filter(function (e) { return e.day === day && e.period === period; }));
+  }
+
+  /* ------------------------------------------------------------------ *
+   * DOM 骨架（§4–§12，空白/锚点与原版一致）
+   * ------------------------------------------------------------------ */
+  var app = document.getElementById('app');
+
+  var HEADER_HTML =
+    '<header class="app-header"><div class="header-inner"><div class="search-wrap">' +
+    '<span class="search-icon">' + ico('search') + '</span> ' +
+    '<input id="searchBox" class="search-box" type="text" autocomplete="off" placeholder="' + SEARCH_PLACEHOLDER + '"/> ' +
+    '<button class="search-clear" id="searchClear" title="清空" aria-label="清空搜索">' + ico('close') + '</button> ' +
+    '<button class="go-btn" id="goBtn">搜索</button> ' +
+    '<div class="suggest" id="suggest"></div>' +
+    '</div></div></header>';
+
+  var TOOLBAR_HTML =
+    '<div class="toolbar">' +
+    '<div class="seg" id="entitySeg">' +
+    '<button data-e="class" class="on">班级</button> <button data-e="teacher">教师</button> <button data-e="room">教室</button>' +
+    '</div> ' +
+    '<button id="pickBtn" class="pick-btn" aria-haspopup="listbox" aria-expanded="false">' +
+    '<span class="pick-label" id="pickLabel">' + pickLabel() + '</span> ' +
+    '<svg class="pick-chev" width="10" height="6" viewBox="0 0 10 6" fill="none" aria-hidden="true"><path d="M1 1l4 4 4-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>' +
+    '</button> ' +
+    '<div class="seg mode-seg"><button id="btnWeek" class="on">本周课表</button> <button id="btnGantt">学期总览</button></div>' +
+    '</div>';
+
+  var WEEKBAR_HTML =
+    '<div class="week-bar" id="weekBar" style="display: flex;">' +
+    '<div class="week-nav" id="weekNav">' +
+    '<button id="wkPrev" title="上一周" aria-label="上一周">' + ico('prev') + '</button> ' +
+    '<div class="week-label" id="wkNum"> </div> ' +
+    '<button id="wkNext" title="下一周" aria-label="下一周">' + ico('next') + '</button> ' +
+    '<button id="wkToday" title="回到本周" class="wk-today off">本周</button>' +
+    '</div> ' +
+    '<div class="week-marks" id="weekMarks"></div>' +
+    '</div>';
+
+  var BANNER_HTML = HAS_PEOPLE ? '<div class="banner" id="studentBanner" style="display: none;"></div>' : '';
+
+  var GRID_HTML =
+    '<div id="gridCard" class="grid-card">' +
+    '<div class="grid-title"><h2 id="gridTitle"> </h2> <span class="sub" id="gridSub"> </span></div> ' +
+    '<div class="grid-scroll"><table class="timetable" id="ttTable">' +
+    '<thead><tr><th class="col-time">节次</th></tr></thead>' +
+    '<tbody></tbody></table></div>' +
+    '</div>';
+
+  var VIEW_TT_HTML = '<section id="view-tt" class="view active">' +
+    TOOLBAR_HTML + ANCHOR + ' ' + WEEKBAR_HTML + ANCHOR + ' ' + BANNER_HTML + ANCHOR + ' ' + GRID_HTML + ANCHOR +
+    '</section>';
+
+  var VIEW_DIR_HTML = HAS_PEOPLE ? (
+    '<section id="view-dir" class="view">' +
+    '<div class="picker-section" style="margin-top:0">' +
+    '<h3>全部班级 <span class="cnt" id="dirCount"> </span></h3> ' +
+    '<div class="dir-grid" id="dirGrid"></div>' +
+    '</div> ' +
+    '<div class="picker-section" id="peopleSection">' +
+    '<h3 id="peopleTitle"></h3> ' +
+    '<div class="dir-grid" id="peopleGrid"> </div>' +
+    '</div>' +
+    '</section>') : '';
+
+  var LAYOUT_HTML = '<div class="layout">' + VIEW_TT_HTML + ' ' + VIEW_DIR_HTML + ANCHOR + ' ' +
+    '<div class="footer">2026-2027学年秋季学期 · 8月31日开学 · 数据仅在本机浏览器中处理</div>' + '</div>';
+
+  var MODAL_HTML =
+    '<div id="modalMask" class="modal-mask"><div class="modal">' +
+    '<div class="modal-head"><h3 id="mTitle">--</h3> <button class="modal-close" id="mClose" aria-label="关闭">' + ico('close') + '</button></div> ' +
+    '<div class="modal-body"><div id="mBody"></div> <div class="modal-actions" id="mActions"></div></div>' +
+    '</div></div>';
+
+  var PICKER_HTML =
+    '<div id="pickMask" class="pick-mask"><div class="pick-sheet" id="pickSheet" role="listbox">' +
+    '<div class="pick-grab"></div> ' +
+    '<div class="pick-head"><span class="pick-title" id="pickTitle"> </span> <button class="pick-close" id="pickClose" aria-label="关闭">' + ico('close') + '</button></div> ' +
+    '<div class="pk-search-wrap"><span class="pk-search-ico">' + ico('search') + '</span> <input id="pickSearch" class="pk-search" type="text" autocomplete="off" placeholder="搜索名称…"/></div> ' +
+    '<div class="pick-list" id="pickList"></div>' +
+    '</div></div>';
+
+  app.innerHTML = HEADER_HTML + ANCHOR + ' ' + LAYOUT_HTML + ' ' + MODAL_HTML + ANCHOR + ' ' + PICKER_HTML + ANCHOR;
+
+  /* DOM 引用 */
+  var el = {
+    app: app,
+    searchBox: document.getElementById('searchBox'),
+    searchClear: document.getElementById('searchClear'),
+    goBtn: document.getElementById('goBtn'),
+    suggest: document.getElementById('suggest'),
+    entitySeg: document.getElementById('entitySeg'),
+    pickBtn: document.getElementById('pickBtn'),
+    pickLabel: document.getElementById('pickLabel'),
+    btnWeek: document.getElementById('btnWeek'),
+    btnGantt: document.getElementById('btnGantt'),
+    weekBar: document.getElementById('weekBar'),
+    wkPrev: document.getElementById('wkPrev'),
+    wkNum: document.getElementById('wkNum'),
+    wkNext: document.getElementById('wkNext'),
+    wkToday: document.getElementById('wkToday'),
+    weekMarks: document.getElementById('weekMarks'),
+    studentBanner: document.getElementById('studentBanner'),
+    viewTt: document.getElementById('view-tt'),
+    viewDir: document.getElementById('view-dir'),
+    gridCard: document.getElementById('gridCard'),
+    gridTitle: document.getElementById('gridTitle'),
+    gridSub: document.getElementById('gridSub'),
+    ttTable: document.getElementById('ttTable'),
+    dirCount: document.getElementById('dirCount'),
+    dirGrid: document.getElementById('dirGrid'),
+    peopleSection: document.getElementById('peopleSection'),
+    peopleTitle: document.getElementById('peopleTitle'),
+    peopleGrid: document.getElementById('peopleGrid'),
+    modalMask: document.getElementById('modalMask'),
+    mTitle: document.getElementById('mTitle'),
+    mBody: document.getElementById('mBody'),
+    mActions: document.getElementById('mActions'),
+    mClose: document.getElementById('mClose'),
+    pickMask: document.getElementById('pickMask'),
+    pickSheet: document.getElementById('pickSheet'),
+    pickTitle: document.getElementById('pickTitle'),
+    pickSearch: document.getElementById('pickSearch'),
+    pickList: document.getElementById('pickList'),
+    pickClose: document.getElementById('pickClose')
+  };
+
+  /* ------------------------------------------------------------------ *
+   * 渲染
+   * ------------------------------------------------------------------ */
+  function setClassList(node, tokens) {
+    var value = tokens.filter(Boolean).join(' ');
+    if (value) node.setAttribute('class', value);
+    else node.removeAttribute('class');
+  }
+
+  // Svelte 的 set_class 语义：元素一旦被写入过动态 class，关掉时属性变为空串而非移除。
+  function toggleOnClass(node, on) {
+    if (on) node.setAttribute('class', 'on');
+    else if (node.getAttribute('class') !== null) node.setAttribute('class', '');
+  }
+
+  function renderViews() {
+    if (el.viewTt) setClassList(el.viewTt, ['view', state.view === 'tt' ? 'active' : '']);
+    if (el.viewDir) setClassList(el.viewDir, ['view', state.view === 'dir' ? 'active' : '']);
+  }
+
+  function renderToolbar() {
+    var buttons = el.entitySeg.querySelectorAll('button[data-e]');
+    for (var i = 0; i < buttons.length; i++) {
+      toggleOnClass(buttons[i], buttons[i].getAttribute('data-e') === state.entity);
+    }
+    setClassList(el.pickBtn, ['pick-btn', current() ? '' : 'placeholder']);
+    el.pickBtn.setAttribute('aria-expanded', String(state.picker.open));
+    el.pickLabel.textContent = pickLabel();
+    toggleOnClass(el.btnWeek, state.mode === 'week');
+    toggleOnClass(el.btnGantt, state.mode === 'gantt');
+  }
+
+  var lastRenderedWeek = null;
+  var lastRenderedMode = null;
+
+  function renderWeekBar() {
+    el.weekBar.style.display = state.mode === 'week' ? 'flex' : 'none';
+    el.wkNum.textContent = '第' + state.week + '周';
+    el.wkPrev.disabled = state.week <= 1;
+    el.wkNext.disabled = state.week >= MAX_WEEK;
+    setClassList(el.wkToday, ['wk-today', state.week === currentWeek() ? 'off' : '']);
+    if (state.mode === 'week') {
+      var html = [];
+      var dots = weekDots();
+      for (var i = 0; i < dots.length; i++) {
+        var d = dots[i];
+        html.push('<button class="wk-dot' + (d.has ? ' has' : '') + (d.cur ? ' cur' : '') +
+          '" data-w="' + d.w + '" aria-label="第' + d.w + '周">' + d.w + '</button>');
+      }
+      el.weekMarks.innerHTML = html.join('');
+    } else {
+      el.weekMarks.innerHTML = '';
+    }
+    // 原版 $effect：week / mode 变化后把当前周圆点滚到可视区中间（§7.4）
+    if (lastRenderedWeek !== state.week || lastRenderedMode !== state.mode) {
+      lastRenderedWeek = state.week;
+      lastRenderedMode = state.mode;
+      if (state.mode === 'week') {
+        var cur = el.weekMarks.querySelector('.wk-dot.cur');
+        if (cur && typeof cur.scrollIntoView === 'function') {
+          cur.scrollIntoView({ block: 'nearest', inline: 'center' });
+        }
+      }
+    }
+  }
+
+  function renderBanner() {
+    if (!HAS_PEOPLE || !el.studentBanner) return;
+    el.studentBanner.style.display = showStudentBanner() ? 'flex' : 'none';
+    if (!showStudentBanner()) {
+      el.studentBanner.innerHTML = '';
+      return;
+    }
+    var s = state.student;
+    el.studentBanner.innerHTML =
+      '<span class="banner-ico">' + ico('person') + '</span> ' +
+      '<span><b>' + escapeHtml(s.name) + '</b> · 学号 ' + escapeHtml(s.code == null ? '' : s.code) + ' · <b>' + escapeHtml(s.klass) + '</b> 的班级课表</span> ' +
+      '<button class="banner-x" id="bannerClose" title="退出查看" aria-label="退出查看">' + ico('close') + '</button>';
+  }
+
+  function slotCellHtml(item, idx, day, period, model) {
+    var loc = (model.isRoom || model.isTeacher)
+      ? (item.clsList && item.clsList.length ? item.clsList.join('、') : (item.clsName || ''))
+      : item.room;
+    return '<div data-idx="' + idx + '" class="slot-cell ' + colorClass(item.course) + '" data-day="' + day + '" data-period="' + period + '">' +
+      '<div class="c-name">' + escapeHtml(item.course) + '</div> ' +
+      '<div class="c-meta"><span class="c-teacher">' + escapeHtml(item.teacher || '—') + '</span> ' +
+      (item.weekText ? '<span class="c-week">' + escapeHtml('· ' + item.weekText) + '</span>' : '') + ANCHOR + ' ' +
+      (loc ? '<br><span class="c-loc">' + escapeHtml(loc) + '</span>' : '') + ANCHOR +
+      '</div></div>';
+  }
+
+  function renderGrid() {
+    var t = gridTitleSub();
+    el.gridTitle.textContent = t.title == null ? '' : t.title;
+    el.gridSub.textContent = t.sub;
+    setClassList(el.gridCard, ['grid-card',
+      state.anim === 'wk-in-right' ? 'wk-in-right' : '',
+      state.anim === 'wk-in-left' ? 'wk-in-left' : '',
+      state.dragging ? 'dragging' : '']);
+    if (state.dragging) el.gridCard.style.transform = 'translateX(' + state.drag + 'px)';
+    else el.gridCard.removeAttribute('style');
+
+    var model = gridModel();
+    var thead = '<th class="col-time">节次</th>';
+    for (var d = 0; d < model.days.length; d++) {
+      var day = model.days[d];
+      thead += '<th' + (day === model.todayIdx ? ' class="today"' : '') + '>' + WEEKDAY_FULL[day - 1] + '</th>';
+    }
+    var theadRow = el.ttTable.querySelector('thead tr');
+    theadRow.innerHTML = thead + ANCHOR;
+
+    var rows = [];
+    for (var r = 0; r < model.rows.length; r++) {
+      var row = model.rows[r];
+      var html = '<tr><td class="time-cell"><div class="t-no">' + row.label + '</div> <div class="t-time">' + row.time + '</div></td>';
+      for (var c = 0; c < row.cells.length; c++) {
+        var cell = row.cells[c];
+        var content;
+        if (cell.items.length) {
+          var cards = [];
+          for (var k = 0; k < cell.items.length; k++) {
+            cards.push(slotCellHtml(cell.items[k], k, cell.day, row.no, model));
+          }
+          content = '<div class="slot-stack">' + cards.join('') + '</div>';
+        } else {
+          content = '<div class="empty-slot">·</div>';
+        }
+        html += '<td class="slot">' + content + ANCHOR + '</td>';
+      }
+      html += ANCHOR + '</tr>';
+      rows.push(html);
+    }
+    el.ttTable.querySelector('tbody').innerHTML = rows.join('');
+  }
+
+  function renderSuggest() {
+    el.suggest.style.display = state.search.open ? 'block' : 'none';
+    if (el.searchBox.value !== state.search.q) el.searchBox.value = state.search.q;
+    el.searchClear.style.display = state.search.q ? 'flex' : 'none';
+    var list = state.search.q.trim() ? scoreSearch(state.search.q) : [];
+    if (!list.length) {
+      el.suggest.innerHTML = '<div class="suggest-empty">未找到匹配的课程 / 班级 / 教室 / 人员</div>';
+      return;
+    }
+    var html = [];
+    for (var i = 0; i < list.length; i++) {
+      var item = list[i];
+      html.push('<button class="suggest-item' + (i === state.search.active ? ' active' : '') + '">' +
+        '<span class="s-tag ' + item.type + '">' + TYPE_LABELS[item.type] + '</span> ' +
+        '<span class="s-name">' + ico(item.type) + ANCHOR + ' ' + escapeHtml(item.name) + '</span> ' +
+        '<span class="s-sub">' + escapeHtml(item.sub || '') + '</span>' +
+        '</button>');
+    }
+    el.suggest.innerHTML = html.join('');
+    // 事件：逐条绑定（原版用闭包；不添加额外 DOM 属性以保持 DOM 一致）
+    var nodes = el.suggest.querySelectorAll('.suggest-item');
+    for (var j = 0; j < nodes.length; j++) {
+      (function (node, item) {
+        node.addEventListener('click', function () { pickSearchItem(item); });
+      })(nodes[j], list[j]);
+    }
+  }
+
+  function renderPicker() {
+    setClassList(el.pickMask, ['pick-mask', state.picker.open ? 'show' : '']);
+    el.pickTitle.textContent = PICK_TITLES[state.entity];
+    if (el.pickSearch.value !== state.picker.query) el.pickSearch.value = state.picker.query;
+
+    var q = state.picker.query.trim().toLowerCase();
+    var list = pickerIndex[state.entity].filter(function (x) {
+      return !q || x.name.toLowerCase().indexOf(q) !== -1;
+    });
+    if (!list.length) {
+      el.pickList.innerHTML = '<div class="pk-empty">未找到匹配项</div>';
+    } else {
+      var html = [];
+      var cur = current();
+      for (var i = 0; i < list.length; i++) {
+        var item = list[i];
+        html.push('<button class="pk-row' + (item.name === cur ? ' cur' : '') + '" data-name="' + escapeAttr(item.name) + '">' +
+          '<span class="pk-name">' + escapeHtml(item.name) + '</span>' +
+          '<span class="pk-sub">' + escapeHtml(item.sub) + '</span> ' +
+          '<span class="pk-check">' + ico('check') + '</span>' +
+          '</button>');
+      }
+      el.pickList.innerHTML = html.join('');
+    }
+
+    if (state.picker.open) {
+      positionSheet();
+      if (window.innerWidth > 733 && document.activeElement !== el.pickSearch) el.pickSearch.focus();
+    }
+  }
+
+  function positionSheet() {
+    var sheet = el.pickSheet;
+    if (window.innerWidth <= 733) {
+      sheet.style.width = '';
+      sheet.style.top = '';
+      sheet.style.left = '';
+      return;
+    }
+    var r = el.pickBtn.getBoundingClientRect();
+    var w = Math.min(340, window.innerWidth - 24);
+    sheet.style.width = w + 'px';
+    var h = Math.min(sheet.offsetHeight || 380, 440);
+    var top = r.bottom + 8;
+    if (top + h > window.innerHeight - 10) top = Math.max(10, r.top - h - 8);
+    sheet.style.top = top + 'px';
+    sheet.style.left = Math.min(Math.max(10, r.left), window.innerWidth - w - 10) + 'px';
+  }
+
+  function renderModal() {
+    setClassList(el.modalMask, ['modal-mask', state.modal ? 'show' : '']);
+    el.mTitle.textContent = state.modal && state.modal.title ? state.modal.title : '--';
+    if (!state.modal) {
+      el.mBody.innerHTML = '';
+      el.mActions.innerHTML = '';
+      return;
+    }
+    var rows = state.modal.rows.map(function (row) {
+      return '<div class="kv"><div class="k">' + escapeHtml(row.k) + '</div><div class="v">' + escapeHtml(row.v) + '</div></div>';
+    });
+    el.mBody.innerHTML = rows.join('');
+    var actions = state.modal.actions.map(function (a) {
+      return '<button class="chip-btn">' + escapeHtml(a.label) + '</button>';
+    });
+    el.mActions.innerHTML = actions.join('');
+    var nodes = el.mActions.querySelectorAll('.chip-btn');
+    for (var i = 0; i < nodes.length; i++) {
+      (function (node, action) {
+        node.addEventListener('click', function () { onAction(action); });
+      })(nodes[i], state.modal.actions[i]);
+    }
+  }
+
+  function renderDir() {
+    if (!HAS_PEOPLE || !el.dirGrid) return;
+    el.dirCount.textContent = Q.classes.length + ' 个班' + (state.dir.mode === 'roster' ? '' : ' · 点击查看课表');
+    var cards = dirClasses();
+    var html = [];
+    for (var i = 0; i < cards.length; i++) {
+      html.push('<div class="dir-card" data-c="' + escapeAttr(cards[i].name) + '">' +
+        '<div class="d-name">' + escapeHtml(cards[i].name) + '</div> ' +
+        '<div class="d-meta">' + escapeHtml(cards[i].sub) + '</div>' +
+        '</div>');
+    }
+    el.dirGrid.innerHTML = html.join('');
+
+    el.peopleSection.style.display = state.dir.mode === 'roster' ? 'block' : 'none';
+    if (state.dir.mode !== 'roster') {
+      el.peopleTitle.innerHTML = '';
+      el.peopleGrid.innerHTML = ' ';
+      return;
+    }
+    var people = dirPeople();
+    el.peopleTitle.innerHTML = escapeHtml(state.dir.klass || '') + ' 学生名单 <span class="cnt">' +
+      people.length + ' 人 · 点击查看课表</span>';
+    var peopleHtml = [];
+    for (var j = 0; j < people.length; j++) {
+      var p = people[j];
+      peopleHtml.push('<div class="dir-card" data-p="' + escapeAttr(p.name + '|' + p.sub) + '">' +
+        '<div class="d-name">' + escapeHtml(p.name) + '</div> ' +
+        '<div class="d-meta">' + escapeHtml(p.sub) + '</div>' +
+        '</div>');
+    }
+    var empty = people.length ? '' : '<div style="color:var(--muted)">该班级暂无学生数据</div>';
+    el.peopleGrid.innerHTML = peopleHtml.join('') + ' ' + empty;
+    var nodes = el.peopleGrid.querySelectorAll('.dir-card[data-p]');
+    for (var k = 0; k < nodes.length; k++) {
+      (function (node, person) {
+        node.addEventListener('click', function () { openStudent(person); });
+      })(nodes[k], people[k].ref);
+    }
+  }
+
+  function render() {
+    renderViews();
+    renderToolbar();
+    renderWeekBar();
+    renderBanner();
+    renderGrid();
+    renderSuggest();
+    renderPicker();
+    renderModal();
+    renderDir();
+    applyEnhancements();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 文案转义
+   * ------------------------------------------------------------------ */
+  function escapeHtml(s) {
+    return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  }
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/"/g, '&quot;');
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 动作（§16）
+   * ------------------------------------------------------------------ */
+  function writeHash(value) {
+    writingHash = true;
+    location.hash = value;
+    writingHash = false;
+  }
+
+  function selectClass(name, keepStudent) {
+    state.klass = name;
+    state.entity = 'class';
+    if (!keepStudent) state.student = null;
+    writeHash('class=' + encodeURIComponent(name));
+    state.view = 'tt';
+    window.scrollTo({ top: 0 });
+    render();
+  }
+
+  function selectTeacher(name) {
+    state.teacher = name;
+    state.entity = 'teacher';
+    state.student = null;
+    writeHash('teacher=' + encodeURIComponent(name));
+    state.view = 'tt';
+    window.scrollTo({ top: 0 });
+    render();
+  }
+
+  function selectRoom(name) {
+    state.room = name;
+    state.entity = 'room';
+    state.student = null;
+    writeHash('room=' + encodeURIComponent(name));
+    state.view = 'tt';
+    window.scrollTo({ top: 0 });
+    render();
+  }
+
+  function openStudent(person) {
+    state.student = { name: person.name, code: person.code, klass: person.klass };
+    selectClass(person.klass, true);
+    writeHash('person=' + encodeURIComponent(person.name) + '&code=' + encodeURIComponent(person.code));
+    render();
+  }
+
+  function closeStudent() {
+    state.student = null;
+    writeHash('class=' + encodeURIComponent(state.klass));
+    render();
+  }
+
+  function selectEntity(x) {
+    if (state.entity === x) { openPicker(); return; }
+    if (x === 'class' && state.klass) { selectClass(state.klass); return; }
+    if (x === 'teacher' && state.teacher) { selectTeacher(state.teacher); return; }
+    if (x === 'room' && state.room) { selectRoom(state.room); return; }
+    state.entity = x;
+    state.student = null;
+    openPicker();
+  }
+
+  function openPicker() {
+    state.picker.query = '';
+    state.picker.open = true;
+    render();
+  }
+
+  function closePicker() {
+    state.picker.open = false;
+    render();
+  }
+
+  function selectFromPicker(name) {
+    closePicker();
+    if (state.entity === 'teacher') selectTeacher(name);
+    else if (state.entity === 'room') selectRoom(name);
+    else selectClass(name);
+  }
+
+  function setMode(mode) {
+    state.mode = mode;
+    render();
+  }
+
+  function stepWeek(delta) {
+    var w = clamp(state.week + delta, 1, MAX_WEEK);
+    if (w !== state.week) {
+      state.week = w;
+      state.anim = delta > 0 ? 'wk-in-right' : 'wk-in-left';
+    }
+    render();
+  }
+
+  function goToday() {
+    state.week = currentWeek();
+    state.anim = '';
+    render();
+  }
+
+  function setWeek(w) {
+    state.week = w;
+    state.anim = '';
+    render();
+  }
+
+  function openRoster(klass) {
+    state.view = 'dir';
+    state.dir = { mode: 'roster', klass: klass };
+    writeHash('dir');
+    window.scrollTo({ top: 0 });
+    render();
+  }
+
+  function onDirClassClick(card) {
+    if (card.hasPeople) openRoster(card.name);
+    else selectClass(card.name);
+  }
+
+  function closeSuggest() {
+    state.search.open = false;
+    state.search.active = -1;
+    render();
+  }
+
+  function setSearchQuery(value) {
+    state.search.q = value;
+    state.search.active = -1;
+    state.search.open = !!String(value).trim();
+    render();
+  }
+
+  function clearSearch() {
+    state.search.q = '';
+    closeSuggest();
+  }
+
+  function applySearchItem(item) {
+    if (item.type === 'class') selectClass(item.name);
+    else if (item.type === 'person') openStudent(item.ref);
+    else if (item.type === 'room') selectRoom(item.name);
+    else if (item.type === 'course') openCourseModal(item.name);
+    else if (item.type === 'teacher') selectTeacher(item.name);
+  }
+
+  function pickSearchItem(item) {
+    state.search.q = item.name;
+    closeSuggest();
+    applySearchItem(item);
+  }
+
+  function submitSearch() {
+    var list = scoreSearch(state.search.q);
+    var item = list[0];
+    if (item) {
+      state.search.q = item.name;
+      applySearchItem(item);
+      closeSuggest();
+    } else if (String(state.search.q).trim()) {
+      state.search.open = true;
+      render();
+    }
+  }
+
+  function moveActive(delta) {
+    var n = scoreSearch(state.search.q).length;
+    state.search.active = Math.max(0, Math.min(state.search.active + delta, n - 1));
+    render();
+  }
+
+  function applyActiveOrFirst() {
+    var list = scoreSearch(state.search.q);
+    var item = state.search.active >= 0 ? list[state.search.active] : list[0];
+    if (item) {
+      state.search.q = item.name;
+      applySearchItem(item);
+      closeSuggest();
+    }
+  }
+
+  function closeModal() {
+    if (!state.modal) return;
+    state.modal = null;
+    render();
+  }
+
+  function openCardModal(day, period, idx) {
+    var items = modalCellItems(day, period);
+    if (!items.length) return;
+    var it = items[idx || 0] || items[0];
+    var rows = [
+      { k: '课程代码', v: it.code },
+      { k: '教师', v: it.teacher },
+      { k: '时间', v: '周' + WEEKDAY_CHAR[day - 1] + ' 第' + period + '节 ' + ((Q.periods[period - 1] || {}).time || '') },
+      { k: '周次', v: it.weekText },
+      { k: '班级', v: it.clsList && it.clsList.length ? it.clsList.join('、') : (it.clsName || it.klass) },
+      { k: '地点', v: it.room }
+    ].filter(function (row) { return row.v; });
+
+    var actions = [];
+    var cur = current();
+    var others = new Set();
+    Q.classes.forEach(function (c) {
+      c.entries.forEach(function (e) {
+        if (e.course === it.course && c.name !== cur) others.add(c.name);
+      });
+    });
+    if (others.size) actions.push({ label: '全校开课位置 · ' + others.size + ' 个班', type: 'course', value: it.course });
+    var teachers = splitTeachers(it);
+    if (state.entity !== 'teacher') {
+      teachers.forEach(function (name) { actions.push({ label: '教师课表 · ' + name, type: 'teacher', value: name }); });
+    }
+    if (state.entity !== 'room' && it.room && it.room !== '无地点安排') {
+      actions.push({ label: '教室课表 · ' + it.room, type: 'room', value: it.room });
+    }
+    if (state.entity !== 'class') {
+      var names = it.clsList && it.clsList.length ? it.clsList : [it.clsName].filter(Boolean);
+      names.forEach(function (n) {
+        var exists = Q.classes.some(function (c) { return c.name === n; });
+        if (exists) actions.push({ label: '班级课表 · ' + n, type: 'klass', value: n });
+      });
+    } else if (HAS_PEOPLE) {
+      actions.push({ label: '本班学生名单', type: 'roster' });
+    }
+    state.modal = { title: it.course, rows: rows, actions: actions };
+    render();
+  }
+
+  function openCourseModal(course) {
+    var list = [];
+    Q.classes.forEach(function (c) {
+      c.entries.forEach(function (e) {
+        if (e.course === course) list.push(Object.assign({}, e, { cls: c.name }));
+      });
+    });
+    var teachers = new Set();
+    list.forEach(function (e) { splitTeachers(e).forEach(function (t) { teachers.add(t); }); });
+    var rows = [{ k: '开课班级', v: list.length + ' 个班次' }];
+    if (teachers.size) rows.push({ k: '授课教师', v: Array.from(teachers).join('、') });
+    state.modal = {
+      title: course,
+      rows: rows,
+      actions: list.map(function (e) {
+        return { label: e.cls + ' · 周' + WEEKDAY_CHAR[e.day - 1] + '第' + e.period + '节', type: 'klass', value: e.cls };
+      })
+    };
+    render();
+  }
+
+  function onAction(action) {
+    state.modal = null;
+    render();
+    if (action.type === 'course') openCourseModal(action.value);
+    else if (action.type === 'teacher') selectTeacher(action.value);
+    else if (action.type === 'room') selectRoom(action.value);
+    else if (action.type === 'klass') selectClass(action.value);
+    else if (action.type === 'roster') openRoster(state.klass);
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 启动（§17）
+   * ------------------------------------------------------------------ */
+  function boot() {
+    state.week = currentWeek();
+    var p = new URLSearchParams(location.hash.slice(1));
+    if (HAS_PEOPLE && p.get('person')) {
+      var person = Q.people.find(function (x) {
+        return x.name === p.get('person') && (!p.get('code') || x.code === p.get('code'));
+      });
+      if (person) {
+        state.student = { name: person.name, code: person.code, klass: person.klass };
+        state.klass = person.klass;
+        state.entity = 'class';
+        state.view = 'tt';
+        state.dir = { mode: 'classes', klass: null };
+        state.mode = 'week';
+        return;
+      }
+    }
+    if (p.get('room')) {
+      var r = p.get('room');
+      if (ROOMS.some(function (x) { return x[0] === r; })) {
+        state.room = r;
+        state.entity = 'room';
+      }
+    }
+    if (p.get('teacher')) {
+      var t = p.get('teacher');
+      if (TEACHERS.some(function (x) { return x[0] === t; })) {
+        state.teacher = t;
+        state.entity = 'teacher';
+      }
+    }
+    if (state.entity !== 'room' && state.entity !== 'teacher') {
+      if (p.get('class')) {
+        var c = Q.classes.find(function (x) { return x.name === p.get('class'); });
+        if (c) state.klass = c.name;
+      }
+      if (!state.klass) state.klass = Q.classes[0].name;
+    }
+    state.mode = 'week';
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 事件
+   * ------------------------------------------------------------------ */
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target || !target.closest) return;
+    var closest = function (sel) { return target.closest(sel); };
+
+    if (closest('.search-clear')) { clearSearch(); return; }
+    if (closest('#goBtn')) { submitSearch(); return; }
+    if (closest('.suggest-item')) return; // 逐条绑定
+
+    var entityBtn = closest('#entitySeg button[data-e]');
+    if (entityBtn) { selectEntity(entityBtn.getAttribute('data-e')); return; }
+
+    if (closest('#pickBtn')) { openPicker(); return; }
+    if (closest('#btnWeek')) { setMode('week'); return; }
+    if (closest('#btnGantt')) { setMode('gantt'); return; }
+    if (closest('#wkPrev')) { stepWeek(-1); return; }
+    if (closest('#wkNext')) { stepWeek(1); return; }
+    if (closest('#wkToday')) { goToday(); return; }
+
+    var dot = closest('.wk-dot');
+    if (dot) { setWeek(Number(dot.getAttribute('data-w'))); return; }
+
+    var bannerClose = closest('#bannerClose');
+    if (bannerClose) { closeStudent(); return; }
+
+    var cell = closest('.slot-cell');
+    if (cell) {
+      openCardModal(Number(cell.getAttribute('data-day')), Number(cell.getAttribute('data-period')), Number(cell.getAttribute('data-idx')));
+      return;
+    }
+
+    if (closest('#mClose')) { closeModal(); return; }
+    if (event.target === el.modalMask) { closeModal(); return; }
+
+    if (closest('#pickClose')) { closePicker(); return; }
+    if (event.target === el.pickMask) { closePicker(); return; }
+
+    var row = closest('.pk-row');
+    if (row) { selectFromPicker(row.getAttribute('data-name')); return; }
+
+    var dirCard = closest('#dirGrid .dir-card');
+    if (dirCard) {
+      var name = dirCard.getAttribute('data-c');
+      onDirClassClick({ name: name, hasPeople: !!(peopleCountByClass[name] || 0) });
+      return;
+    }
+  });
+
+  // 点击搜索区外 → 关闭建议（§14.2）
+  document.addEventListener('click', function (event) {
+    var target = event.target;
+    if (!target || !target.closest || target.closest('.search-wrap')) return;
+    if (state.search.open) closeSuggest();
+  });
+
+  // 搜索框 / picker 输入
+  document.addEventListener('input', function (event) {
+    var t = event.target;
+    if (!t) return;
+    if (ENHANCED && t.__ttComposing) return;
+    if (t.id === 'searchBox') setSearchQuery(t.value);
+    else if (t.id === 'pickSearch') { state.picker.query = t.value; render(); }
+  });
+
+  // 键盘
+  document.addEventListener('keydown', function (event) {
+    var t = event.target;
+    if (!t) return;
+    if (t.id === 'searchBox') {
+      if (event.key === 'ArrowDown') { event.preventDefault(); moveActive(1); return; }
+      if (event.key === 'ArrowUp') { event.preventDefault(); moveActive(-1); return; }
+      if (event.key === 'Enter') { event.preventDefault(); applyActiveOrFirst(); return; }
+      if (event.key === 'Escape') { closeSuggest(); return; }
+    }
+    if (t.id === 'pickSearch' && event.key === 'Enter') {
+      var q = state.picker.query.trim().toLowerCase();
+      var list = pickerIndex[state.entity].filter(function (x) { return !q || x.name.toLowerCase().indexOf(q) !== -1; });
+      if (list.length) selectFromPicker(list[0].name);
+      return;
+    }
+    if (event.key === 'Escape') {
+      if (state.modal) closeModal();
+      if (state.picker.open) closePicker();
+    }
+  });
+
+  // #gridCard 动画结束 → 清空 anim（§9.4）
+  el.gridCard.addEventListener('animationend', function () {
+    if (state.anim) { state.anim = ''; renderGrid(); }
+  });
+
+  // 滚动指示（§14.4）
+  (function initScrollWatcher() {
+    var timer = 0;
+    window.addEventListener('scroll', function () {
+      document.documentElement.classList.add('is-scrolling');
+      clearTimeout(timer);
+      timer = setTimeout(function () {
+        document.documentElement.classList.remove('is-scrolling');
+      }, 900);
+    }, { passive: true, capture: true });
+  })();
+
+  // resize 时重算 picker 位置（§11.3）
+  window.addEventListener('resize', function () {
+    if (state.picker.open) positionSheet();
+  });
+
+  /* ------------------------------------------------------------------ *
+   * 手势（§14.1）
+   * ------------------------------------------------------------------ */
+  (function initGestures() {
+    var x0 = 0, y0 = 0, dx = 0, dy = 0, t0 = 0;
+    var tracking = false, horizontal = false;
+    var wheelAcc = 0, lastDir = 0, lastFire = 0;
+
+    function overlayOpen() {
+      return !!(document.querySelector('.pick-mask.show, .modal-mask.show'));
+    }
+    function ignored(target) {
+      return !!(target && target.closest && target.closest('.week-marks, button, input, .suggest, .pick-mask, .modal-mask, .modal'));
+    }
+
+    el.viewTt.addEventListener('touchstart', function (e) {
+      if (state.mode !== 'week' || e.touches.length !== 1 || overlayOpen() || ignored(e.target)) return;
+      state.anim = '';
+      x0 = e.touches[0].clientX;
+      y0 = e.touches[0].clientY;
+      dx = 0; dy = 0;
+      t0 = Date.now();
+      tracking = true;
+      horizontal = false;
+    }, { passive: true });
+
+    el.viewTt.addEventListener('touchmove', function (e) {
+      if (!tracking || e.touches.length !== 1) return;
+      dx = e.touches[0].clientX - x0;
+      dy = e.touches[0].clientY - y0;
+      if (!horizontal) {
+        if (Math.abs(dx) < 8 && Math.abs(dy) < 8) return;
+        if (Math.abs(dx) <= Math.abs(dy)) { tracking = false; return; }
+        horizontal = true;
+      }
+      state.dragging = true;
+      state.drag = clamp(dx * 0.22, -46, 46);
+      renderGrid();
+    }, { passive: true });
+
+    function endTouch(e) {
+      var wasTracking = tracking;
+      tracking = false;
+      state.dragging = false;
+      state.drag = 0;
+      if (!wasTracking || state.mode !== 'week') return;
+      if (e.changedTouches && e.changedTouches[0]) {
+        dx = e.changedTouches[0].clientX - x0;
+        dy = e.changedTouches[0].clientY - y0;
+      }
+      if (Math.abs(dx) >= 44 && Math.abs(dx) > Math.abs(dy) * 1.2 && Date.now() - t0 < 1200) {
+        stepWeek(dx > 0 ? -1 : 1);
+      }
+    }
+    el.viewTt.addEventListener('touchend', endTouch);
+    el.viewTt.addEventListener('touchcancel', endTouch);
+
+    el.viewTt.addEventListener('wheel', function (e) {
+      if (state.mode !== 'week' || overlayOpen() || (e.target.closest && e.target.closest('.week-marks'))) return;
+      var mult = e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? 100 : 1;
+      var raw = (Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) * mult;
+      if (!raw) return;
+      var now = Date.now();
+      if (now - lastFire > 400) wheelAcc = 0;
+      var dir = raw > 0 ? 1 : -1;
+      if (dir !== lastDir) { wheelAcc = 0; lastDir = dir; }
+      if ((dir > 0 && state.week >= MAX_WEEK) || (dir < 0 && state.week <= 1)) { wheelAcc = 0; return; }
+      e.preventDefault();
+      wheelAcc += raw;
+      if (Math.abs(wheelAcc) >= 48 && now - lastFire >= 400) {
+        lastFire = now;
+        wheelAcc = 0;
+        stepWeek(dir);
+      }
+    }, { passive: false });
+  })();
+
+  /* ------------------------------------------------------------------ *
+   * 增强（无障碍 / 动态标题 / hash 同步 / 输入法安全）
+   * ------------------------------------------------------------------ */
+  function applyEnhancements() {
+    if (!ENHANCED) return;
+    // 动态标题
+    var t = gridTitleSub();
+    document.title = '课表 · ' + (t.title || '') + (t.title ? ' · ' : '') + '第' + state.week + '周';
+    // 卡片可键盘聚焦
+    var cells = el.ttTable.querySelectorAll('.slot-cell');
+    for (var i = 0; i < cells.length; i++) {
+      cells[i].setAttribute('role', 'button');
+      cells[i].setAttribute('tabindex', '0');
+      cells[i].setAttribute('aria-label', cells[i].querySelector('.c-name').textContent);
+    }
+  }
+
+  // 输入法安全（组合输入期间不触发搜索）
+  if (ENHANCED) {
+    document.addEventListener('compositionstart', function (e) {
+      if (e.target) e.target.__ttComposing = true;
+    }, true);
+    document.addEventListener('compositionend', function (e) {
+      if (e.target) {
+        e.target.__ttComposing = false;
+        if (e.target.id === 'searchBox') setSearchQuery(e.target.value);
+        else if (e.target.id === 'pickSearch') { state.picker.query = e.target.value; render(); }
+      }
+    }, true);
+    // 前进/后退同步
+    window.addEventListener('hashchange', function () {
+      if (writingHash) return;
+      applyHashState();
+    });
+    // 键盘激活卡片
+    document.addEventListener('keydown', function (e) {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target && e.target.classList && e.target.classList.contains('slot-cell')) {
+        e.preventDefault();
+        openCardModal(Number(e.target.getAttribute('data-day')), Number(e.target.getAttribute('data-period')), Number(e.target.getAttribute('data-idx')));
+      }
+    });
+  }
+
+  function applyHashState() {
+    var hash = location.hash.slice(1);
+    var p = new URLSearchParams(hash);
+    var weekNum = Number(p.get('week'));
+    if (HAS_PEOPLE && p.get('person')) {
+      var person = Q.people.find(function (x) {
+        return x.name === p.get('person') && (!p.get('code') || x.code === p.get('code'));
+      });
+      if (person) {
+        state.student = { name: person.name, code: person.code, klass: person.klass };
+        state.entity = 'class';
+        state.klass = person.klass;
+        state.view = 'tt';
+      }
+    } else if (p.get('teacher') && TEACHERS.some(function (x) { return x[0] === p.get('teacher'); })) {
+      state.entity = 'teacher'; state.teacher = p.get('teacher'); state.student = null; state.view = 'tt';
+    } else if (p.get('room') && ROOMS.some(function (x) { return x[0] === p.get('room'); })) {
+      state.entity = 'room'; state.room = p.get('room'); state.student = null; state.view = 'tt';
+    } else if (p.get('class')) {
+      var klass = Q.classes.find(function (x) { return x.name === p.get('class'); });
+      if (klass) { state.entity = 'class'; state.klass = klass.name; state.view = 'tt'; }
+    } else if (hash === 'dir' && state.klass) {
+      state.view = 'dir'; state.dir = { mode: 'roster', klass: state.klass };
+    }
+    if (weekNum >= 1 && weekNum <= MAX_WEEK) state.week = weekNum;
+    render();
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 挂载
+   * ------------------------------------------------------------------ */
+  boot();
+  render();
+})();
+</script>
+</body>
+</html>
